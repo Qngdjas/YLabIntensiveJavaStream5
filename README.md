@@ -2,5 +2,5 @@
 
 Ссылка на ДЗ 1:
 ```
-http://github.com
+https://github.com/Qngdjas/YLabIntensiveJavaStream5/pull/1
 ```
