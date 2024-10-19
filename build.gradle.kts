@@ -5,12 +5,20 @@ plugins {
 group = "ru.qngdjas"
 version = "1.0-SNAPSHOT"
 
+extra.apply {
+    set("postgresqlVersion", "42.7.4")
+    set("liquibaseVersion", "4.29.2")
+    set("junitVersion", "5.10.0")
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
+    implementation("org.postgresql:postgresql:${rootProject.extra["postgresqlVersion"]}")
+    implementation("org.liquibase:liquibase-core:${rootProject.extra["liquibaseVersion"]}")
+    testImplementation(platform("org.junit:junit-bom:${rootProject.extra["junitVersion"]}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
@@ -18,10 +26,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "windows-1251"
+tasks.register<JavaExec>("runMigrations") {
+    mainClass.set("ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager")
+    classpath = sourceSets["main"].runtimeClasspath
 }
-
-//tasks.withType<Test> {
-//    systemProperty("file.encoding", "windows-1251")
-//}

@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.qngdjas.habitstracker.model.Habit;
-import ru.qngdjas.habitstracker.model.User;
+import ru.qngdjas.habitstracker.domain.model.Habit;
+import ru.qngdjas.habitstracker.domain.model.user.User;
+import ru.qngdjas.habitstracker.infrastructure.service.HabitService;
+import ru.qngdjas.habitstracker.infrastructure.service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;

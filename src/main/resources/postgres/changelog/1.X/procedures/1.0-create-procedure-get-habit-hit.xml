@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+                   logicalFilePath="postgres/1.X/changelog.xml">
+
+    <changeSet id="1.0-create-procedure-get-habit-hit"
+               author="Qngdjas">
+
+        <createProcedure procedureName="GetHabitHit"
+                         schemaName="public">
+
+            CREATE OR REPLACE PROCEDURE GetHabitHit(IN habitId INT, INOUT actualStreak INT default 0)
+            LANGUAGE plpgsql AS $$
+            BEGIN
+            END;
+            $$
+
+        </createProcedure>
+
+    </changeSet>
+
+</databaseChangeLog>

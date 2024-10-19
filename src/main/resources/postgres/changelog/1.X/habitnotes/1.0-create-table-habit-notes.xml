@@ -1,0 +1,39 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+                   logicalFilePath="postgres/1.X/changelog.xml">
+
+    <changeSet id="1.0-create-table-habit-notes"
+               author="Qngdjas">
+
+        <createTable tableName="habit_notes" schemaName="public">
+
+            <column name="noted_date"
+                    type="DATE"
+                    defaultValueComputed="CURRENT_DATE"
+                    remarks="Дата создания привычки">
+
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="habit_notes_noted_date_habit_id_pkey"/>
+
+            </column>
+
+            <column name="habit_id"
+                    type="int">
+
+                <constraints foreignKeyName="habit_notes_note_id_habits_habit_id"
+                             references="entity.habits(habit_id)"
+                             deleteCascade="true"
+                             nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="habit_notes_noted_date_habit_id_pkey"/>
+
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

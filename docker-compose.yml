@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: habits-tracker-postgres
+    environment:
+      POSTGRES_USER: habits_watcher
+      POSTGRES_PASSWORD: habits_safety
+      POSTGRES_DB: habits_tracker
+
+    ports:
+      - "5433:5432"
