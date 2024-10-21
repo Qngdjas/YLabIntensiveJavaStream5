@@ -10,8 +10,7 @@
         <createTable tableName="habits" schemaName="entity">
 
             <column name="habit_id"
-                    type="BIGINT"
-                    autoIncrement="true"
+                    type="BIGSERIAL"
                     remarks="Идентификатор">
 
                 <constraints primaryKey="true"

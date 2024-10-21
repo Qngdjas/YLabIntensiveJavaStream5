@@ -30,3 +30,9 @@ tasks.register<JavaExec>("runMigrations") {
     mainClass.set("ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager")
     classpath = sourceSets["main"].runtimeClasspath
 }
+
+tasks.register<JavaExec>("runTestMigrations") {
+    mainClass.set("ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager")
+    classpath = sourceSets["main"].runtimeClasspath
+    args = listOf("TEST")
+}

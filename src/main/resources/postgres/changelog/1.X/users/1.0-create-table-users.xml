@@ -11,8 +11,7 @@
                      schemaName="entity">
 
             <column name="user_id"
-                    type="BIGINT"
-                    autoIncrement="true"
+                    type="BIGSERIAL"
                     remarks="Идентификатор">
 
                 <constraints primaryKey="true"
