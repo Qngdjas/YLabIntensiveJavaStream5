@@ -1,18 +1,15 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
 import ru.qngdjas.habitstracker.domain.model.Habit;
-import ru.qngdjas.habitstracker.domain.repository.IStatisticRepository;
+import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManager;
 
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class StatisticRepository implements IStatisticRepository {
-
-    private static final Map<Habit, TreeSet<LocalDate>> habitStatistic = new HashMap<>();
+public class HabitNotesRepository implements IHabitNotesRepository {
 
     @Override
     public LocalDate note(long habitID, LocalDate noteDate) {
@@ -22,8 +19,6 @@ public class StatisticRepository implements IStatisticRepository {
             preparedStatement.setDate(1, Date.valueOf(noteDate));
             preparedStatement.setLong(2, habitID);
             preparedStatement.executeUpdate();
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            resultSet.next();
             System.out.println("Привычка отмечена");
             return noteDate;
         } catch (SQLException exception) {
@@ -38,7 +33,10 @@ public class StatisticRepository implements IStatisticRepository {
         String sql = "CALL getactualhabitstreak(?)";
         try (Connection connection = ConnectionManager.getInstance().getConnection()) {
             CallableStatement callableStatement = connection.prepareCall(sql);
-
+            callableStatement.setLong(1, habitID);
+            ResultSet resultSet = callableStatement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1);
         } catch (SQLException exception) {
             System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
         }
@@ -47,36 +45,21 @@ public class StatisticRepository implements IStatisticRepository {
 
     @Override
     public double getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
-//        if (!beginDate.isAfter(endDate)) {
-//            long marked = 0, total = 0;
-//            for (LocalDate date = beginDate; !date.isAfter(endDate); date = date.plusDays(habit.getRange())) {
-//                if (isNoted(habit, date)) {
-//                    marked++;
-//                }
-//                total++;
-//            }
-//            return (double) marked / total * 100.0f;
-//        }
+        if (!beginDate.isAfter(endDate)) {
+            double hit = 0.0;
+            String sql = "CALL GetHabitHit(?, ?, ?)";
+            try (Connection connection = ConnectionManager.getInstance().getConnection()) {
+                CallableStatement callableStatement = connection.prepareCall(sql);
+                callableStatement.setLong(1, habitID);
+                ResultSet resultSet = callableStatement.executeQuery();
+                resultSet.next();
+                hit = resultSet.getDouble(1);
+            } catch (SQLException exception) {
+                System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
+            }
+            return hit;
+        }
         throw new IllegalArgumentException("Дата конца периода не может быть меньше даты начала периода");
     }
-
-    @Override
-    public boolean isNoted(long habitID, LocalDate date) {
-//        if (habitStatistic.containsKey(habit)) {
-//            TreeSet<LocalDate> marks = habitStatistic.get(habit);
-//            // Если есть совпадения ключей, то значит отметка присутствует
-//            if (marks.contains(date)) {
-//                return true;
-//            }
-//            // Если дата попадает в период, то отметка засчитывается
-//            for (LocalDate mark : marks) {
-//                if (date.isAfter(mark) && date.isBefore(mark.plusDays(habit.getRange()))) {
-//                    return true;
-//                }
-//            }
-//        }
-        return false;
-    }
-
 
 }

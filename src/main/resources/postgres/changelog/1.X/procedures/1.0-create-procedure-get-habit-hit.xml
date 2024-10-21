@@ -11,10 +11,38 @@
         <createProcedure procedureName="GetHabitHit"
                          schemaName="public">
 
-            CREATE OR REPLACE PROCEDURE GetHabitHit(IN habitId INT, INOUT actualStreak INT default 0)
+            CREATE OR REPLACE PROCEDURE GetHabitHit(in habitID integer, in beginDate date, in endDate date, inout hit float default 0.0)
             LANGUAGE plpgsql AS $$
-            BEGIN
-            END;
+                DECLARE
+                    dayCount INT;
+                    buffer INT;
+                    notedCounter INT;
+                    total INT;
+                BEGIN
+                    SELECT CASE WHEN h.daily_flag THEN 1 ELSE 7 END
+                    INTO dayCount
+                    FROM entity.habits h
+                    WHERE h.habit_id = habitId;
+
+                    buffer := CASE WHEN dayCount = 1 THEN 0 ELSE EXTRACT (DOW FROM beginDate) END;
+                    beginDate := beginDate - buffer;
+                    notedCounter := 0;
+                    total := 0;
+                    WHILE beginDate IS NOT NULL AND beginDate &lt;= endDate LOOP
+                        IF EXISTS (
+                        SELECT *
+                        FROM habit_notes hn
+                        WHERE hn.habit_id = habitID
+                        AND noted_date &gt;= beginDate
+                        AND noted_date &lt; beginDate + dayCount
+                        ) THEN
+                            notedCounter := notedCounter + 1;
+                        END IF;
+                        total := total + 1;
+                        beginDate := beginDate + dayCount;
+                    END LOOP;
+                    hit := notedCounter * 100.0 / total;
+                END;
             $$
 
         </createProcedure>

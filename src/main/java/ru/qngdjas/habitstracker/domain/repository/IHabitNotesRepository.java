@@ -1,10 +1,8 @@
 package ru.qngdjas.habitstracker.domain.repository;
 
-import ru.qngdjas.habitstracker.domain.model.Habit;
-
 import java.time.LocalDate;
 
-public interface IStatisticRepository {
+public interface IHabitNotesRepository {
 
     LocalDate note(long habitID, LocalDate date);
 
@@ -12,5 +10,4 @@ public interface IStatisticRepository {
 
     double getHit(long habitID, LocalDate beginDate, LocalDate endDate);
 
-    boolean isNoted(long habitID, LocalDate date);
 }

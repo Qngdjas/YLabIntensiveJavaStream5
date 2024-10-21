@@ -14,47 +14,35 @@
             CREATE OR REPLACE PROCEDURE GetActualHabitStreak(IN habitId INT, INOUT actualStreak INT default 0)
             LANGUAGE plpgsql AS $$
             DECLARE
-                isDaily BOOLEAN;
-                streak INT := 0;
-                lastNotedDate DATE;
                 dayCount INT;
-                counter INT;
+                lastNotedDate DATE;
+                buffer INT;
             BEGIN
-                SELECT h.daily_flag INTO isDaily
-                FROM entity.habits AS h
-                WHERE h.habit_id = habitId;
-                IF isDaily THEN
-                    dayCount := 1;
-                ELSE
-                    dayCount := 7;
-                END IF;
-                SELECT MAX(noted_date) INTO lastNotedDate
-                FROM habit_notes
-                WHERE habit_id = habitId;
-                counter := dayCount;
-                WHILE lastNotedDate IS NOT NULL and counter &gt; 0 LOOP
+                SELECT CASE WHEN h.daily_flag THEN 1 ELSE 7 END, MAX(hn.noted_date)
+                INTO dayCount, lastNotedDate
+                FROM habit_notes hn
+                INNER JOIN entity.habits h ON hn.habit_id = h.habit_id
+                WHERE h.habit_id = habitId
+                GROUP BY h.habit_id;
+                actualstreak := 0;
+                buffer := CASE WHEN dayCount = 1 THEN 1 ELSE 7 - EXTRACT (DOW FROM lastNotedDate) END;
+                lastNotedDate := lastNotedDate + buffer;
+                WHILE lastNotedDate IS NOT NULL LOOP
                     IF EXISTS (
-                        SELECT 1
-                        FROM habit_notes
-                        WHERE habit_id = habitId
-                        AND noted_date &lt; lastNotedDate + dayCount
-                        AND noted_date &gt;= lastNotedDate
+                        SELECT *
+                        FROM habit_notes hn
+                        WHERE hn.habit_id = habitId
+                        AND noted_date &gt;= lastNotedDate - dayCount
+                        AND noted_date &lt; lastNotedDate
                     ) THEN
-                        streak := streak + 1;
-                        counter := dayCount;
+                        actualstreak := actualstreak + 1;
+                        lastNotedDate := lastNotedDate - dayCount;
                     ELSE
-                        counter := counter - 1;
+                        EXIT;
                     END IF;
-                    SELECT MAX(noted_date) INTO lastNotedDate
-                    FROM habit_notes
-                    WHERE habit_id = habitId
-                    AND noted_date &lt; lastNotedDate;
                 END LOOP;
-                actualstreak := streak;
             END;
             $$;
-
-
 
         </createProcedure>
 

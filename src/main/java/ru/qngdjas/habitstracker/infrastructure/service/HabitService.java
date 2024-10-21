@@ -3,9 +3,9 @@ package ru.qngdjas.habitstracker.infrastructure.service;
 import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IHabitRepository;
-import ru.qngdjas.habitstracker.domain.repository.IStatisticRepository;
+import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitRepository;
-import ru.qngdjas.habitstracker.infrastructure.persistance.StatisticRepository;
+import ru.qngdjas.habitstracker.infrastructure.persistance.HabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import java.util.*;
 public class HabitService extends Service {
 
     private static final IHabitRepository habitRepository = new HabitRepository();
-    private static final IStatisticRepository statisticRepository = new StatisticRepository();
+    private static final IHabitNotesRepository statisticRepository = new HabitNotesRepository();
 
     public Habit add(String habitName, String description, boolean isDaily) {
         if (isAuth()) {
