@@ -21,7 +21,7 @@ class HabitServiceTest {
 
     @BeforeAll
     static void init() {
-        userService.register("user@domain", "user", "user");
+        userService.register("user@domain", "user", "user", false);
         habitService.add("Привычка 1", "Описание привычки 1", true);
         habitService.add("Привычка 2", "Описание привычки 2", false);
         habitService.add("Привычка для обновления", "Описание привычки для обновления", true);
@@ -111,8 +111,8 @@ class HabitServiceTest {
 
     @Test
     void testNoteWithDate() {
-        LocalDate date = habitService.note("Привычка 1", "2024-10-10");
-        Assertions.assertEquals(LocalDate.parse("2024-10-10"), date);
+        LocalDate date = habitService.note("Привычка 1", "2023-10-10");
+        Assertions.assertEquals(LocalDate.parse("2023-10-10"), date);
     }
 
     @Test

@@ -36,7 +36,7 @@ public class CommandManager {
                 String password = reader.nextLine();
                 System.out.println("Введите имя");
                 String name = reader.nextLine();
-                User user = userService.register(email, password, name);
+                User user = userService.register(email, password, name, false);
                 System.out.println("Выполнено");
             }
         },

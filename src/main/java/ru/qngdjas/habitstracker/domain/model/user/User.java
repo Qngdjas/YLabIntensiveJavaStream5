@@ -14,11 +14,6 @@ public class User extends Model {
     private String name;
     private boolean isAdmin;
 
-
-    public User(String email, String password, String name) throws EmailException {
-        this(email, password, name, false);
-    }
-
     public User(String email, String password, String name, boolean isAdmin) throws EmailException {
         this(-1, email, password, name, isAdmin);
     }

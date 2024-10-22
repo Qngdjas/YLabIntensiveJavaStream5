@@ -15,14 +15,14 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     public LocalDate note(long habitID, LocalDate noteDate) {
         String sql = "INSERT INTO habit_notes (noted_date, habit_id) VALUES (?, ?)";
         try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setDate(1, Date.valueOf(noteDate));
             preparedStatement.setLong(2, habitID);
             preparedStatement.executeUpdate();
             System.out.println("Привычка отмечена");
             return noteDate;
         } catch (SQLException exception) {
-            System.out.printf("Не удалось добавить привычку:\n%s\n", exception);
+            System.out.printf("Не удалось отметить привычку:\n%s\n", exception);
         }
         return null;
     }
@@ -30,13 +30,13 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     @Override
     public long getStreak(long habitID) {
         int streak = 0;
-        String sql = "CALL getactualhabitstreak(?)";
+        String sql = "{CALL GetActualHabitStreak(?, ?)}";
         try (Connection connection = ConnectionManager.getInstance().getConnection()) {
             CallableStatement callableStatement = connection.prepareCall(sql);
             callableStatement.setLong(1, habitID);
-            ResultSet resultSet = callableStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1);
+            callableStatement.registerOutParameter(2, Types.INTEGER);
+            callableStatement.execute();
+            streak = callableStatement.getInt(2);
         } catch (SQLException exception) {
             System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
         }
@@ -47,13 +47,15 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     public double getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
         if (!beginDate.isAfter(endDate)) {
             double hit = 0.0;
-            String sql = "CALL GetHabitHit(?, ?, ?)";
+            String sql = "{CALL GetHabitHit(?, ?, ?, ?)}";
             try (Connection connection = ConnectionManager.getInstance().getConnection()) {
                 CallableStatement callableStatement = connection.prepareCall(sql);
                 callableStatement.setLong(1, habitID);
-                ResultSet resultSet = callableStatement.executeQuery();
-                resultSet.next();
-                hit = resultSet.getDouble(1);
+                callableStatement.setDate(2, Date.valueOf(beginDate));
+                callableStatement.setDate(3, Date.valueOf(endDate));
+                callableStatement.registerOutParameter(4, Types.DOUBLE);
+                callableStatement.execute();
+                hit = callableStatement.getDouble(4);
             } catch (SQLException exception) {
                 System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
             }

@@ -25,12 +25,12 @@ public class UserService extends Service {
         return null;
     }
 
-    public User register(String email, String password, String name) {
+    public User register(String email, String password, String name, Boolean isAdmin) {
         if (userRepository.isExists(email)) {
             System.out.println("Пользователь с таким email уже существует");
         } else {
             try {
-                User user = userRepository.create(new User(email, password, name));
+                User user = userRepository.create(new User(email, password, name, isAdmin));
                 Session.getInstance().setUser(user);
                 return user;
             } catch (EmailException exception) {
