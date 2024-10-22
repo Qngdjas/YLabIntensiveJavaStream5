@@ -27,12 +27,15 @@ tasks.test {
 }
 
 tasks.register<JavaExec>("runMigrations") {
+    group = "migration"
+    description = "Выполнение миграции БД"
     mainClass.set("ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager")
     classpath = sourceSets["main"].runtimeClasspath
 }
 
 tasks.register<JavaExec>("runTestMigrations") {
+    group = "migration"
+    description = "Выполнение миграции тестовой БД"
     mainClass.set("ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager")
-    classpath = sourceSets["main"].runtimeClasspath
-    args = listOf("TEST")
+    classpath = sourceSets["test"].runtimeClasspath
 }

@@ -1,7 +1,6 @@
 package ru.qngdjas.habitstracker;
 
 import ru.qngdjas.habitstracker.domain.command.CommandManager;
-import ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager;
 
 import java.io.IOException;
 import java.util.Scanner;

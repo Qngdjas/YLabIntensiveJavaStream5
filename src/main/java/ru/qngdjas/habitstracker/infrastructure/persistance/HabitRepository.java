@@ -74,7 +74,7 @@ public class HabitRepository implements IHabitRepository {
 
     @Override
     public Habit retrieveByUserIDAndName(long userID, String name) {
-        String sql = "SELECT * FROM entity.habits AS h WHERE h.user_id = ? AND h.habit_name = ?)";
+        String sql = "SELECT * FROM entity.habits AS h WHERE h.user_id = ? AND h.habit_name = ?";
         try (Connection connection = ConnectionManager.getInstance().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, userID);

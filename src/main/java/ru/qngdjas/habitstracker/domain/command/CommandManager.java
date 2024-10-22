@@ -204,7 +204,7 @@ public class CommandManager {
     }
 
     public void execute(String input) {
-        Command command;
+        Executable command;
         try {
             command = commands.get(input);
             command.execute();

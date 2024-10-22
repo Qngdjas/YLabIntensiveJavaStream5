@@ -13,7 +13,6 @@ import java.sql.SQLException;
 public class MigrationManager {
 
     public static void main(String[] args) {
-//        TODO: Адаптировать к запуску с аргументом TEST
         migrate();
     }
 

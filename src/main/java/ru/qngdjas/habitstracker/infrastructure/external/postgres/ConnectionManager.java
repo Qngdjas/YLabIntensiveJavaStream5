@@ -30,7 +30,6 @@ public class ConnectionManager {
             this.url = String.format("%s://%s:%s/%s", properties.getProperty("postgres.scheme"), properties.getProperty("postgres.host"), properties.getProperty("postgres.port"), properties.getProperty("postgres.db"));
             this.user = properties.getProperty("postgres.user");
             this.password = properties.getProperty("postgres.password");
-            System.out.printf("%s\n%s\n%s", url, user, password);
         } catch (IOException exception) {
             System.out.printf("Не удалось подключиться к БД:\n%s\n", exception);
         }

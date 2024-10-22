@@ -1,7 +1,6 @@
 package ru.qngdjas;
 
 import ru.qngdjas.habitstracker.Application;
-import ru.qngdjas.habitstracker.infrastructure.external.postgres.MigrationManager;
 
 import java.io.IOException;
 
