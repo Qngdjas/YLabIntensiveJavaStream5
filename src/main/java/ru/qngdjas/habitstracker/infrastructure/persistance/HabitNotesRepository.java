@@ -34,6 +34,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
         try (Connection connection = ConnectionManager.getInstance().getConnection()) {
             CallableStatement callableStatement = connection.prepareCall(sql);
             callableStatement.setLong(1, habitID);
+            callableStatement.setInt(2, streak);
             callableStatement.registerOutParameter(2, Types.INTEGER);
             callableStatement.execute();
             streak = callableStatement.getInt(2);
@@ -53,6 +54,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
                 callableStatement.setLong(1, habitID);
                 callableStatement.setDate(2, Date.valueOf(beginDate));
                 callableStatement.setDate(3, Date.valueOf(endDate));
+                callableStatement.setDouble(4, hit);
                 callableStatement.registerOutParameter(4, Types.DOUBLE);
                 callableStatement.execute();
                 hit = callableStatement.getDouble(4);
