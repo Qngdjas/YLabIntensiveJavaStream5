@@ -141,7 +141,7 @@ public class CommandManager {
             @Override
             public void execute() {
                 System.out.println("Вывод текущих серий выполнения привычек:");
-                Map<Habit, Long> habitStreak = habitService.getStreak();
+                Map<String, Long> habitStreak = habitService.getStreak();
                 System.out.println(habitStreak.toString());
                 System.out.println("Выполнено");
             }

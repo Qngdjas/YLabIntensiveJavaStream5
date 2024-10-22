@@ -107,12 +107,12 @@ public class HabitService extends Service {
         return null;
     }
 
-    public Map<Habit, Long> getStreak() {
-        Map<Habit, Long> streaks = new HashMap<>();
+    public Map<String, Long> getStreak() {
+        Map<String, Long> streaks = new HashMap<>();
         if (isAuth()) {
             List<Habit> habits = getAll();
             for (Habit habit : habits) {
-                streaks.put(habit, statisticRepository.getStreak(habit.getID()));
+                streaks.put(habit.getName(), statisticRepository.getStreak(habit.getID()));
             }
         }
         return streaks;

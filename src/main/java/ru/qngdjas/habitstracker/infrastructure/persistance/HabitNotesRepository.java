@@ -1,13 +1,11 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
-import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManager;
 
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.*;
 
 public class HabitNotesRepository implements IHabitNotesRepository {
 
@@ -30,10 +28,10 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     @Override
     public long getStreak(long habitID) {
         int streak = 0;
-        String sql = "{CALL GetActualHabitStreak(?, ?)}";
+        String sql = "CALL getactualhabitstreak(?, ?)";
         try (Connection connection = ConnectionManager.getInstance().getConnection()) {
             CallableStatement callableStatement = connection.prepareCall(sql);
-            callableStatement.setLong(1, habitID);
+            callableStatement.setInt(1, (int) habitID);
             callableStatement.setInt(2, streak);
             callableStatement.registerOutParameter(2, Types.INTEGER);
             callableStatement.execute();
@@ -48,10 +46,10 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     public double getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
         if (!beginDate.isAfter(endDate)) {
             double hit = 0.0;
-            String sql = "{CALL GetHabitHit(?, ?, ?, ?)}";
+            String sql = "CALL gethabithit(?, ?, ?, ?)";
             try (Connection connection = ConnectionManager.getInstance().getConnection()) {
                 CallableStatement callableStatement = connection.prepareCall(sql);
-                callableStatement.setLong(1, habitID);
+                callableStatement.setInt(1, (int) habitID);
                 callableStatement.setDate(2, Date.valueOf(beginDate));
                 callableStatement.setDate(3, Date.valueOf(endDate));
                 callableStatement.setDouble(4, hit);
