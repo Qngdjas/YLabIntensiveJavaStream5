@@ -6,10 +6,23 @@ import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
+/**
+ * Сервис обработки запросов управления пользователями.
+ */
 public class UserService extends Service {
 
+    /**
+     * Репозиторий CRUD-операций над моделями пользователей.
+     */
     private final static IUserRepository userRepository = new UserRepository();
 
+    /**
+     * Метод аутентификации пользователя по почте и паролю.
+     *
+     * @param email    Адрес электронной почты пользователя.
+     * @param password Пароль пользователя.
+     * @return Аутентифицированный пользователь {@link User}, если учетные данные корректны, <p>иначе {@code null}.
+     */
     public User login(String email, String password) {
         User user = userRepository.retrieveByEmail(email);
         if (user != null) {
@@ -25,6 +38,16 @@ public class UserService extends Service {
         return null;
     }
 
+    /**
+     * Метод регистрации нового пользователя.
+     *
+     * @param email    Адрес электронной почты пользователя.
+     * @param password Пароль пользователя.
+     * @param name     Имя пользователя.
+     * @param isAdmin  Статус администратора.
+     * @return Зарегистрированный пользователь {@link User},
+     * <p>{@code null} если регистрация не удалась.
+     */
     public User register(String email, String password, String name, Boolean isAdmin) {
         if (userRepository.isExists(email)) {
             System.out.println("Пользователь с таким email уже существует");
@@ -40,6 +63,15 @@ public class UserService extends Service {
         return null;
     }
 
+    /**
+     * Метод обновления профиля пользователя.
+     *
+     * @param email    Адрес электронной почты пользователя.
+     * @param password Пароль пользователя.
+     * @param name     Имя пользователя.
+     * @return Обновленный пользователь {@link User},
+     * <p>{@code null} если обновление не удалось.
+     */
     public User update(String email, String password, String name) {
         if (isAuth()) {
             if (!userRepository.isExists(email)) {
@@ -64,6 +96,13 @@ public class UserService extends Service {
         return null;
     }
 
+    /**
+     * Метод удаления профиля пользователя.
+     *
+     * @param email Адрес электронной почты пользователя.
+     * @return Удаленный пользователь {@link User},
+     * <p>{@code null} если удаление не удалось.
+     */
     public User delete(String email) {
         if (isAuth()) {
             if (Session.getInstance().getUser().getEmail().equals(email) || isAdmin()) {

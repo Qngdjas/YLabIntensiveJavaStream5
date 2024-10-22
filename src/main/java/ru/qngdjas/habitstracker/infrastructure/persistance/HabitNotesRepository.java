@@ -12,8 +12,8 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     @Override
     public LocalDate note(long habitID, LocalDate noteDate) {
         String sql = "INSERT INTO habit_notes (noted_date, habit_id) VALUES (?, ?)";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setDate(1, Date.valueOf(noteDate));
             preparedStatement.setLong(2, habitID);
             preparedStatement.executeUpdate();
@@ -29,8 +29,8 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     public long getStreak(long habitID) {
         int streak = 0;
         String sql = "CALL getactualhabitstreak(?, ?)";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            CallableStatement callableStatement = connection.prepareCall(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (CallableStatement callableStatement = connection.prepareCall(sql)) {
             callableStatement.setInt(1, (int) habitID);
             callableStatement.setInt(2, streak);
             callableStatement.registerOutParameter(2, Types.INTEGER);
@@ -47,8 +47,8 @@ public class HabitNotesRepository implements IHabitNotesRepository {
         if (!beginDate.isAfter(endDate)) {
             double hit = 0.0;
             String sql = "CALL gethabithit(?, ?, ?, ?)";
-            try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-                CallableStatement callableStatement = connection.prepareCall(sql);
+            Connection connection = ConnectionManager.getInstance().getConnection();
+            try (CallableStatement callableStatement = connection.prepareCall(sql)) {
                 callableStatement.setInt(1, (int) habitID);
                 callableStatement.setDate(2, Date.valueOf(beginDate));
                 callableStatement.setDate(3, Date.valueOf(endDate));

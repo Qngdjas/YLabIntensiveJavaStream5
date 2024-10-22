@@ -9,15 +9,28 @@ import ru.qngdjas.habitstracker.infrastructure.session.Session;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * Класс менеджера консольных команд.
+ */
 public class CommandManager {
 
+    /**
+     * Перечисление доступных команд.
+     * <p>Представляет реализацию интерфейса {@link Executable}.
+     */
     enum Command implements Executable {
+        /**
+         * Коамнда, предоставляющая список доступных команд.
+         */
         help {
             @Override
             public void execute() {
                 System.out.printf("Список доступных команд:\n%s\n", Arrays.toString(Command.values()));
             }
         },
+        /**
+         * Команда, предоставляющая информацию о текущей сессии.
+         */
         session {
             @Override
             public void execute() {
@@ -26,6 +39,9 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда регистрации в приложении.
+         */
         register {
             @Override
             public void execute() {
@@ -40,6 +56,9 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда аутентификации в приложении.
+         */
         login {
             @Override
             public void execute() {
@@ -53,6 +72,9 @@ public class CommandManager {
             }
 
         },
+        /**
+         * Команда обновления собственных учетных данных пользователя.
+         */
         update_user {
             @Override
             public void execute() {
@@ -67,6 +89,12 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда удаления пользователя.
+         * <p>В соответствии с {@link UserService#delete(String)} пользователю
+         * предоставляется возможность удалить собственную учетную запись,
+         * администратор может удалять любые учетные записи.
+         */
         delete_user {
             @Override
             public void execute() {
@@ -77,6 +105,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда добавления новой привычки.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         add_habit {
             @Override
             public void execute() {
@@ -91,6 +123,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда обновления привычки.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         update_habit {
             @Override
             public void execute() {
@@ -107,6 +143,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда получения списка привычек пользователя.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         get_habits {
             @Override
             public void execute() {
@@ -115,6 +155,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда удаления привычек.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         delete_habit {
             @Override
             public void execute() {
@@ -125,6 +169,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда отметки выполнения привычек.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         note_habit {
             @Override
             public void execute() {
@@ -137,6 +185,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда получения текущей серии выполнения привычек.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         get_streak {
             @Override
             public void execute() {
@@ -146,6 +198,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда получения успеваемости по привычке за период.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         get_hit {
             @Override
             public void execute() {
@@ -160,6 +216,10 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда предоставления отчета успеваемости по всем привычкам.
+         * <p>{@link HabitService} ограничивает операции только для собственных привычек.
+         */
         get_hits {
             @Override
             public void execute() {
@@ -172,6 +232,9 @@ public class CommandManager {
                 System.out.println("Выполнено");
             }
         },
+        /**
+         * Команда завершения работы приложения.
+         */
         exit {
             @Override
             public void execute() {
@@ -180,7 +243,21 @@ public class CommandManager {
             }
         };
 
+        /**
+         * Объект чтения пользовательского ввода.
+         */
         private static final Scanner reader = new Scanner(System.in);
+        /**
+         * Сервис обработки запросов управления пользователями.
+         */
+        private static final UserService userService = new UserService();
+        /**
+         * Сервис обработки запросов управления привычками.
+         */
+        private static final HabitService habitService = new HabitService();
+        /**
+         * Список распознаваемых командами положительных ответов.
+         */
         private static final Set<String> OK = new HashSet<>();
 
         static {
@@ -191,25 +268,20 @@ public class CommandManager {
             OK.add("yes");
         }
 
-        private static final UserService userService = new UserService();
-        private static final HabitService habitService = new HabitService();
     }
 
-    private static final Map<String, Command> commands = new HashMap<>();
-
-    static {
-        for (Command command : Command.values()) {
-            commands.put(command.name(), command);
-        }
-    }
-
+    /**
+     * Обработчик команд.
+     * <p>Передает выполнение команды в {@link Command} если она существует.
+     *
+     * @param input Ожидаемая команда.
+     */
     public void execute(String input) {
-        Executable command;
         try {
-            command = commands.get(input);
+            Executable command = Command.valueOf(input.toLowerCase());
             command.execute();
-        } catch (NullPointerException exception) {
-            System.out.printf("Команды %s не существует.%n", input);
+        } catch (IllegalArgumentException exception) {
+            System.out.printf("Команды %s не существует.\n", input);
         }
     }
 }

@@ -12,8 +12,8 @@ public class HabitRepository implements IHabitRepository {
     @Override
     public Habit create(Habit instance) {
         String sql = "INSERT INTO entity.habits (habit_name, description, daily_flag, user_id) VALUES (?, ?, ?, ?)";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, instance.getName());
             preparedStatement.setString(2, instance.getDescription());
             preparedStatement.setBoolean(3, instance.isDaily());
@@ -32,8 +32,8 @@ public class HabitRepository implements IHabitRepository {
     @Override
     public Habit update(Habit instance) {
         String sql = "UPDATE entity.habits AS h SET (habit_name, description, daily_flag) = (?, ?, ?) WHERE h.habit_id = ?";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, instance.getName());
             preparedStatement.setString(2, instance.getDescription());
             preparedStatement.setBoolean(3, instance.isDaily());
@@ -52,8 +52,8 @@ public class HabitRepository implements IHabitRepository {
     @Override
     public Habit retrieve(long id) {
         String sql = "SELECT * FROM entity.habits AS h WHERE h.habit_id = ?";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             ResultSet result = preparedStatement.executeQuery();
             if (result.next()) {
@@ -75,8 +75,8 @@ public class HabitRepository implements IHabitRepository {
     @Override
     public Habit retrieveByUserIDAndName(long userID, String name) {
         String sql = "SELECT * FROM entity.habits AS h WHERE h.user_id = ? AND h.habit_name = ?";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, userID);
             preparedStatement.setString(2, name);
             ResultSet result = preparedStatement.executeQuery();
@@ -106,8 +106,8 @@ public class HabitRepository implements IHabitRepository {
     public List<Habit> listByUserID(long userID) {
         List<Habit> habits = new ArrayList<>();
         String sql = "SELECT * FROM entity.habits AS h WHERE h.user_id = ?";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, userID);
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()) {
@@ -129,8 +129,8 @@ public class HabitRepository implements IHabitRepository {
     @Override
     public void delete(long id) {
         String sql = "DELETE FROM entity.habits AS h WHERE h.habit_id = ?";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, id);
             int result = preparedStatement.executeUpdate();
         } catch (SQLException exception) {
@@ -142,8 +142,8 @@ public class HabitRepository implements IHabitRepository {
     public boolean isExists(long userID, String habitName) {
         boolean isExists = false;
         String sql = "SELECT EXISTS (SELECT h.habit_id FROM entity.habits AS h WHERE h.user_id = ? AND h.habit_name = ?)";
-        try (Connection connection = ConnectionManager.getInstance().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        Connection connection = ConnectionManager.getInstance().getConnection();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, userID);
             preparedStatement.setString(2, habitName);
             ResultSet resultSet = preparedStatement.executeQuery();
