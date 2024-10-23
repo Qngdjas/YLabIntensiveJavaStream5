@@ -2,8 +2,8 @@ package ru.qngdjas.habitstracker.domain.command;
 
 import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.model.user.User;
-import ru.qngdjas.habitstracker.infrastructure.service.HabitService;
-import ru.qngdjas.habitstracker.infrastructure.service.UserService;
+import ru.qngdjas.habitstracker.domain.service.HabitService;
+import ru.qngdjas.habitstracker.domain.service.UserService;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 import java.time.LocalDate;

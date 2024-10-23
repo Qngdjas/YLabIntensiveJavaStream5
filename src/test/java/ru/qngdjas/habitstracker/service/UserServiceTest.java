@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.qngdjas.habitstracker.domain.model.user.User;
-import ru.qngdjas.habitstracker.infrastructure.service.UserService;
+import ru.qngdjas.habitstracker.domain.service.UserService;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 class UserServiceTest {

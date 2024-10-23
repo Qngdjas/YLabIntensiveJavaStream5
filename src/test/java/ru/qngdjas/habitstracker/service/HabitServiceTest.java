@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.model.user.User;
-import ru.qngdjas.habitstracker.infrastructure.service.HabitService;
-import ru.qngdjas.habitstracker.infrastructure.service.UserService;
+import ru.qngdjas.habitstracker.domain.service.HabitService;
+import ru.qngdjas.habitstracker.domain.service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;

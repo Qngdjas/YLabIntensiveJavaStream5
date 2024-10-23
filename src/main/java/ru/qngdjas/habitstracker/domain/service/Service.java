@@ -1,4 +1,4 @@
-package ru.qngdjas.habitstracker.infrastructure.service;
+package ru.qngdjas.habitstracker.domain.service;
 
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
