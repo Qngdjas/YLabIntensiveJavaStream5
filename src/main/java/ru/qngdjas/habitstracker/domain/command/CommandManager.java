@@ -132,14 +132,14 @@ public class CommandManager {
             public void execute() {
                 System.out.println("Обновление привычки:");
                 System.out.println("Ведите наименование привычки, которую вы хотите обновить");
-                String oldHabitName = reader.nextLine();
+                String currentHabitName = reader.nextLine();
                 System.out.println("Введите наименование");
                 String habitName = reader.nextLine();
                 System.out.println("Введите описание");
                 String description = reader.nextLine();
                 System.out.println("Привычка ежедневная (д/н)");
                 boolean isDaily = OK.contains(reader.nextLine());
-                Habit habit = habitService.update(oldHabitName, habitName, description, isDaily);
+                Habit habit = habitService.update(currentHabitName, habitName, description, isDaily);
                 System.out.println("Выполнено");
             }
         },
