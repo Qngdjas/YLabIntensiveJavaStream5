@@ -73,12 +73,12 @@ public class HabitRepository implements IHabitRepository {
     }
 
     @Override
-    public Habit retrieveByUserIDAndName(long userID, String name) {
+    public Habit retrieveByUserIDAndName(long userID, String habitName) {
         String sql = "SELECT * FROM entity.habits AS h WHERE h.user_id = ? AND h.habit_name = ?";
         Connection connection = ConnectionManager.getInstance().getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, userID);
-            preparedStatement.setString(2, name);
+            preparedStatement.setString(2, habitName);
             ResultSet result = preparedStatement.executeQuery();
             if (result.next()) {
                 return new Habit(
