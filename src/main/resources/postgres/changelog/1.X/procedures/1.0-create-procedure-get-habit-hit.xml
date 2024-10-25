@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+                   logicalFilePath="postgres/1.X/changelog.xml">
+
+    <changeSet id="1.0-create-procedure-get-habit-hit"
+               author="Qngdjas">
+
+        <createProcedure procedureName="GetHabitHit"
+                         schemaName="public">
+
+            CREATE OR REPLACE PROCEDURE GetHabitHit(in habitID integer, in beginDate date, in endDate date, inout hit float default 0.0)
+            LANGUAGE plpgsql AS $$
+                DECLARE
+                    dayCount INT;
+                    buffer INT;
+                    notedCounter INT;
+                    total INT;
+                BEGIN
+                    SELECT CASE WHEN h.daily_flag THEN 1 ELSE 7 END
+                    INTO dayCount
+                    FROM entity.habits h
+                    WHERE h.habit_id = habitId;
+
+                    buffer := CASE WHEN dayCount = 1 THEN 0 ELSE EXTRACT (DOW FROM beginDate) END;
+                    beginDate := beginDate - buffer;
+                    notedCounter := 0;
+                    total := 0;
+                    WHILE beginDate IS NOT NULL AND beginDate &lt;= endDate LOOP
+                        IF EXISTS (
+                        SELECT *
+                        FROM habit_notes hn
+                        WHERE hn.habit_id = habitID
+                        AND noted_date &gt;= beginDate
+                        AND noted_date &lt; beginDate + dayCount
+                        ) THEN
+                            notedCounter := notedCounter + 1;
+                        END IF;
+                        total := total + 1;
+                        beginDate := beginDate + dayCount;
+                    END LOOP;
+                    hit := notedCounter * 100.0 / total;
+                END;
+            $$
+
+        </createProcedure>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,73 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+                   logicalFilePath="postgres/1.X/changelog.xml">
+
+    <changeSet id="1.0-create-table-habits"
+               author="Qngdjas">
+
+        <createTable tableName="habits" schemaName="entity">
+
+            <column name="habit_id"
+                    type="BIGSERIAL"
+                    remarks="Идентификатор">
+
+                <constraints primaryKey="true"
+                             nullable="false"/>
+
+            </column>
+
+            <column name="habit_name"
+                    type="VARCHAR(255)"
+                    remarks="Наименование привычки">
+
+                <constraints nullable="false"
+                             unique="true"
+                             uniqueConstraintName="habits_habit_name_user_id_key"/>
+
+            </column>
+
+            <column name="description"
+                    type="VARCHAR(255)"
+                    remarks="Описание привычки">
+
+                <constraints nullable="false"/>
+
+            </column>
+
+            <column name="daily_flag"
+                    type="BOOLEAN"
+                    defaultValueBoolean="true"
+                    remarks="Периодичность (ежедневная/еженедельная)">
+
+                <constraints nullable="false"/>
+
+            </column>
+
+            <column name="created_date"
+                    type="TIMESTAMP"
+                    defaultValueComputed="CURRENT_TIMESTAMP"
+                    remarks="Дата создания привычки">
+
+                <constraints nullable="false"/>
+
+            </column>
+
+            <column name="user_id"
+                    type="int">
+
+                <constraints foreignKeyName="habits_user_id_users_user_id"
+                             references="entity.users(user_id)"
+                             deleteCascade="true"
+                             nullable="false"
+                             unique="true"
+                             uniqueConstraintName="habits_habit_name_user_id_key"/>
+
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

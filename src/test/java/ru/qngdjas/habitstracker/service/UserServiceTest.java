@@ -4,8 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.qngdjas.habitstracker.model.User;
-import ru.qngdjas.habitstracker.session.Session;
+import ru.qngdjas.habitstracker.domain.model.user.User;
+import ru.qngdjas.habitstracker.domain.service.UserService;
+import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 class UserServiceTest {
 
@@ -14,12 +15,11 @@ class UserServiceTest {
 
     @BeforeAll
     static void init() {
-        User admin = userService.register("admin@domain", "admin", "admin");
-        admin.setAdmin(true);
-        userService.register("user@domain", "user", "user");
-        userService.register("user_for_update@domain", "user_for_update", "user_for_update");
-        userService.register("user_for_delete@domain", "user_for_delete", "user_for_delete");
-        userService.register("user_for_delete_by_admin@domain", "user_for_delete_by_admin", "user_for_delete_by_admin");
+        User admin = userService.register("admin@domain", "admin", "admin", true);
+        userService.register("user@domain", "user", "user", false);
+        userService.register("user_for_update@domain", "user_for_update", "user_for_update", false);
+        userService.register("user_for_delete@domain", "user_for_delete", "user_for_delete", false);
+        userService.register("user_for_delete_by_admin@domain", "user_for_delete_by_admin", "user_for_delete_by_admin", false);
     }
 
     @BeforeEach
@@ -47,19 +47,19 @@ class UserServiceTest {
 
     @Test
     void testSuccessfulRegister() {
-        User user = userService.register("new_user@domain", "new_user_pass", "new_user_name");
+        User user = userService.register("new_user@domain", "new_user_pass", "new_user_name", false);
         Assertions.assertEquals(Session.getInstance().getUser(), user);
     }
 
     @Test
     void testWrongEmailRegister() {
-        User user = userService.register("new_user_without_domain", "new_user_pass", "new_user_name");
+        User user = userService.register("new_user_without_domain", "new_user_pass", "new_user_name", false);
         Assertions.assertNull(user);
     }
 
     @Test
     void testExistingUserRegister() {
-        User user = userService.register("user@domain", "user", "user");
+        User user = userService.register("user@domain", "user", "user", false);
         Assertions.assertNull(user);
     }
 
@@ -78,13 +78,13 @@ class UserServiceTest {
 
     @Test
     void testWrongEmailUpdate() {
-        User user = userService.register("new_user_without_domain", "new_user_pass", "new_user_name");
+        User user = userService.register("new_user_without_domain", "new_user_pass", "new_user_name", false);
         Assertions.assertNull(user);
     }
 
     @Test
     void testExistingUserUpdate() {
-        User user = userService.register("user@domain", "user", "user");
+        User user = userService.register("user@domain", "user", "user", false);
         Assertions.assertNull(user);
     }
 

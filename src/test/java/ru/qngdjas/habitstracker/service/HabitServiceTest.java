@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.qngdjas.habitstracker.model.Habit;
-import ru.qngdjas.habitstracker.model.User;
+import ru.qngdjas.habitstracker.domain.model.Habit;
+import ru.qngdjas.habitstracker.domain.model.user.User;
+import ru.qngdjas.habitstracker.domain.service.HabitService;
+import ru.qngdjas.habitstracker.domain.service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,7 +21,7 @@ class HabitServiceTest {
 
     @BeforeAll
     static void init() {
-        userService.register("user@domain", "user", "user");
+        userService.register("user@domain", "user", "user", false);
         habitService.add("Привычка 1", "Описание привычки 1", true);
         habitService.add("Привычка 2", "Описание привычки 2", false);
         habitService.add("Привычка для обновления", "Описание привычки для обновления", true);
@@ -109,8 +111,8 @@ class HabitServiceTest {
 
     @Test
     void testNoteWithDate() {
-        LocalDate date = habitService.note("Привычка 1", "2024-10-10");
-        Assertions.assertEquals(LocalDate.parse("2024-10-10"), date);
+        LocalDate date = habitService.note("Привычка 1", "2023-10-10");
+        Assertions.assertEquals(LocalDate.parse("2023-10-10"), date);
     }
 
     @Test
@@ -121,22 +123,26 @@ class HabitServiceTest {
 
     @Test
     void testGetDailyStreak() {
-        habitService.note("Привычка 1", "2024-10-11");
-        habitService.note("Привычка 1", "2024-10-10");
-        habitService.note("Привычка 1", "2024-10-12");
-        Map<Habit, Long> streaks = habitService.getStreak();
+        LocalDate now = LocalDate.now().plusYears(1);
+        habitService.note("Привычка 1", now.plusDays(1).toString());
+        habitService.note("Привычка 1", now.plusDays(2).toString());
+        habitService.note("Привычка 1", now.plusDays(3).toString());
+        Map<String, Long> streaks = habitService.getStreak();
         Assertions.assertNotNull(streaks);
-        Assertions.assertEquals(3, streaks.get(habitService.get("Привычка 1")));
+        Habit habit = habitService.get("Привычка 1");
+        Assertions.assertEquals(3, streaks.get(habit.getName()));
     }
 
     @Test
     void testGetWeeklyStreak() {
-        habitService.note("Привычка 2", "2024-10-17");
-        habitService.note("Привычка 2", "2024-10-14");
-        habitService.note("Привычка 2", "2024-10-24");
-        Map<Habit, Long> streaks = habitService.getStreak();
+        LocalDate now = LocalDate.now().plusYears(1);
+        habitService.note("Привычка 2", now.plusWeeks(1).toString());
+        habitService.note("Привычка 2", now.plusWeeks(2).toString());
+        habitService.note("Привычка 2", now.plusWeeks(3).toString());
+        Map<String, Long> streaks = habitService.getStreak();
         Assertions.assertNotNull(streaks);
-        Assertions.assertEquals(3, streaks.get(habitService.get("Привычка 2")));
+        Habit habit = habitService.get("Привычка 2");
+        Assertions.assertEquals(3, streaks.get(habit.getName()));
     }
 
     @Test
@@ -154,6 +160,6 @@ class HabitServiceTest {
         habitService.note("Привычка 2", "2024-10-14");
         habitService.note("Привычка 2", "2024-10-24");
         double hit = habitService.getHit("Привычка 2", "2024-10-07", "2024-10-27");
-        Assertions.assertEquals(66.67, hit, 0.01);
+        Assertions.assertEquals(50.00, hit, 0.01);
     }
 }

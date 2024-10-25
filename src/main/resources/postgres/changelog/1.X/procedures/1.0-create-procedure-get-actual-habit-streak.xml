@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd"
+                   logicalFilePath="postgres/1.X/changelog.xml">
+
+    <changeSet id="1.0-create-procedure-get-actual-habit-streak"
+               author="Qngdjas">
+
+        <createProcedure procedureName="GetActualHabitStreak"
+                         schemaName="public">
+
+            CREATE OR REPLACE PROCEDURE GetActualHabitStreak(IN habitId INT, INOUT actualStreak INT default 0)
+            LANGUAGE plpgsql AS $$
+            DECLARE
+                dayCount INT;
+                lastNotedDate DATE;
+                buffer INT;
+            BEGIN
+                SELECT CASE WHEN h.daily_flag THEN 1 ELSE 7 END, MAX(hn.noted_date)
+                INTO dayCount, lastNotedDate
+                FROM habit_notes hn
+                INNER JOIN entity.habits h ON hn.habit_id = h.habit_id
+                WHERE h.habit_id = habitId
+                GROUP BY h.habit_id;
+                actualstreak := 0;
+                buffer := CASE WHEN dayCount = 1 THEN 1 ELSE 7 - EXTRACT (DOW FROM lastNotedDate) END;
+                lastNotedDate := lastNotedDate + buffer;
+                WHILE lastNotedDate IS NOT NULL LOOP
+                    IF EXISTS (
+                        SELECT *
+                        FROM habit_notes hn
+                        WHERE hn.habit_id = habitId
+                        AND noted_date &gt;= lastNotedDate - dayCount
+                        AND noted_date &lt; lastNotedDate
+                    ) THEN
+                        actualstreak := actualstreak + 1;
+                        lastNotedDate := lastNotedDate - dayCount;
+                    ELSE
+                        EXIT;
+                    END IF;
+                END LOOP;
+            END;
+            $$;
+
+        </createProcedure>
+
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,11 @@
+services:
+  test_postgres:
+    image: postgres:latest
+    container_name: test-habits-tracker-postgres
+    environment:
+      POSTGRES_DB: test_habits_tracker
+      POSTGRES_USER: test_habits_watcher
+      POSTGRES_PASSWORD: test_habits_safety
+
+    ports:
+      - "5434:5432"
