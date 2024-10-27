@@ -1,4 +1,4 @@
-package ru.qngdjas.habitstracker.domain.command;
+package ru.qngdjas.habitstracker.api.command;
 
 /**
  * Интерфейс консольных команд.

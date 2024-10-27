@@ -1,4 +1,4 @@
-package ru.qngdjas.habitstracker.domain.command;
+package ru.qngdjas.habitstracker.api.command;
 
 import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.model.user.User;

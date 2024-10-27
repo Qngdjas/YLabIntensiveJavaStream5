@@ -8,7 +8,6 @@ import ru.qngdjas.habitstracker.infrastructure.session.Session;
  */
 abstract class Service {
 
-
     /**
      * Информационные сообщения, отображающиеся при попытке выполнить действия, требующих определенных прав доступа.
      */

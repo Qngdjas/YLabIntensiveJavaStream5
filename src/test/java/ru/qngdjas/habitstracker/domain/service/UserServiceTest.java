@@ -1,4 +1,4 @@
-package ru.qngdjas.habitstracker.service;
+package ru.qngdjas.habitstracker.domain.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

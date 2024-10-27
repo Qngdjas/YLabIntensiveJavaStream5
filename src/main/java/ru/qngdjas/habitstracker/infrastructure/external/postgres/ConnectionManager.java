@@ -17,11 +17,13 @@ public class ConnectionManager {
     private String password;
 
 
-    private ConnectionManager() {
+    private ConnectionManager() throws ClassNotFoundException {
+        Class.forName("org.postgresql.Driver");
         loadProperties();
     }
 
     private void loadProperties() {
+
         Properties properties = new Properties();
         try (InputStream inputStream = getClass().getResourceAsStream("/postgres/config.properties")) {
             if (inputStream == null) {
@@ -38,7 +40,11 @@ public class ConnectionManager {
 
     public static ConnectionManager getInstance() {
         if (instance == null) {
-            instance = new ConnectionManager();
+            try {
+                instance = new ConnectionManager();
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Не найден org.postgres.Driver:\n" + e.getMessage());
+            }
         }
         return instance;
     }

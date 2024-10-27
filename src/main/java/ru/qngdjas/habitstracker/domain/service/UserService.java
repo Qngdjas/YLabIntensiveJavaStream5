@@ -1,5 +1,9 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import ru.qngdjas.habitstracker.application.dto.user.LoginDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
+import ru.qngdjas.habitstracker.application.mapper.model.UserMapper;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
@@ -15,6 +19,7 @@ public class UserService extends Service {
      * Репозиторий CRUD-операций над моделями пользователей.
      */
     private final static IUserRepository userRepository = new UserRepository();
+    private final static UserMapper mapper = UserMapper.INSTANCE;
 
     /**
      * Метод аутентификации пользователя по почте и паролю.
@@ -28,6 +33,20 @@ public class UserService extends Service {
         if (user != null) {
             if (user.getPassword().equals(password)) {
                 Session.getInstance().setUser(user);
+                System.out.printf("Пользователь %s авторизован\n", user.getEmail());
+                return user;
+            }
+            System.out.println("Пароль введен не верно");
+        } else {
+            System.out.println("Пользователь не найден");
+        }
+        return null;
+    }
+
+    public User login(LoginDTO loginDTO) {
+        User user = userRepository.retrieveByEmail(loginDTO.getEmail());
+        if (user != null) {
+            if (user.getPassword().equals(loginDTO.getPassword())) {
                 System.out.printf("Пользователь %s авторизован\n", user.getEmail());
                 return user;
             }
@@ -56,6 +75,19 @@ public class UserService extends Service {
                 User user = userRepository.create(new User(email, password, name, isAdmin));
                 Session.getInstance().setUser(user);
                 return user;
+            } catch (EmailException exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+        return null;
+    }
+
+    public User register(UserCreateDTO userDTO) {
+        if (userRepository.isExists(userDTO.getEmail())) {
+            System.out.println("Пользователь с таким email уже существует");
+        } else {
+            try {
+                return userRepository.create(mapper.toUser(userDTO));
             } catch (EmailException exception) {
                 System.out.println(exception.getMessage());
             }
@@ -96,6 +128,17 @@ public class UserService extends Service {
         return null;
     }
 
+    public User update(UserUpdateDTO userDTO) {
+        if (isAuth()) {
+            if (!userRepository.isExists(userDTO.getEmail())) {
+                return userRepository.update(mapper.toUser(userDTO));
+            } else {
+                System.out.println("Email занят");
+            }
+        }
+        return null;
+    }
+
     /**
      * Метод удаления профиля пользователя.
      *
@@ -117,6 +160,24 @@ public class UserService extends Service {
                 }
                 System.out.println("Пользователь не найден");
             }
+        }
+        return null;
+    }
+
+    public User delete(long id) {
+        if (isAuth()) {
+//            if (Session.getInstance().getUser().getEmail().equals(email) || isAdmin()) {
+                User user = userRepository.retrieve(id);
+                if (user != null) {
+                    userRepository.delete(user.getID());
+                    if (Session.getInstance().getUser().getID() == user.getID()) {
+                        Session.getInstance().setUser(null);
+                    }
+                    System.out.printf("Пользователь %s удален\n", user.getEmail());
+                    return user;
+                }
+                System.out.println("Пользователь не найден");
+//            }
         }
         return null;
     }

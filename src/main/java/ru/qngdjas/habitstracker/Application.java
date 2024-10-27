@@ -1,6 +1,6 @@
 package ru.qngdjas.habitstracker;
 
-import ru.qngdjas.habitstracker.domain.command.CommandManager;
+import ru.qngdjas.habitstracker.api.command.CommandManager;
 
 import java.io.IOException;
 import java.util.Scanner;
