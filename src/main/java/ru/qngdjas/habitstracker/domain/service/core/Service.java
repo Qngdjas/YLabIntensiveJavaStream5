@@ -1,4 +1,4 @@
-package ru.qngdjas.habitstracker.domain.service;
+package ru.qngdjas.habitstracker.domain.service.core;
 
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
@@ -6,7 +6,7 @@ import ru.qngdjas.habitstracker.infrastructure.session.Session;
  * Базовый класс сервисов.
  * <p>Представляет общие методы проверки аутентификации и прав доступа.
  */
-abstract class Service {
+abstract public class Service {
 
     /**
      * Информационные сообщения, отображающиеся при попытке выполнить действия, требующих определенных прав доступа.

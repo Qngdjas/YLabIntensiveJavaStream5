@@ -24,12 +24,13 @@ dependencies {
     compileOnly("jakarta.servlet:jakarta.servlet-api:${rootProject.extra["jakartaVersion"]}")
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jacksonVersion"]}")
     implementation("org.mapstruct:mapstruct:${rootProject.extra["mapstructVersion"]}")
-    implementation("org.mapstruct:mapstruct-processor:${rootProject.extra["mapstructVersion"]}")
+    annotationProcessor("org.mapstruct:mapstruct-processor:${rootProject.extra["mapstructVersion"]}")
     implementation("org.codehaus.mojo:aspectj-maven-plugin:${rootProject.extra["assertJVersion"]}")
     implementation("org.postgresql:postgresql:${rootProject.extra["postgresqlVersion"]}")
     implementation("org.liquibase:liquibase-core:${rootProject.extra["liquibaseVersion"]}")
     testImplementation(platform("org.junit:junit-bom:${rootProject.extra["junitVersion"]}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:${rootProject.extra["mapstructVersion"]}")
 }
 
 tasks.test {

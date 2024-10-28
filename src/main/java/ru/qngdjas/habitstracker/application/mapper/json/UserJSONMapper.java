@@ -1,8 +1,9 @@
 package ru.qngdjas.habitstracker.application.mapper.json;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import ru.qngdjas.habitstracker.application.dto.user.LoginDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
 
@@ -15,11 +16,11 @@ public class UserJSONMapper {
 
     public UserJSONMapper() {
         objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public LoginDTO toLoginDTO(InputStream json) throws IOException {
-        return objectMapper.readValue(json, LoginDTO.class);
+    public UserLoginDTO toLoginDTO(InputStream json) throws IOException {
+        return objectMapper.readValue(json, UserLoginDTO.class);
     }
 
     public UserCreateDTO toUserCreateDTO(InputStream json) throws IOException {

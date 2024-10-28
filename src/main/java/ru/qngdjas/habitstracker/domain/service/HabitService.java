@@ -4,6 +4,7 @@ import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IHabitRepository;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
+import ru.qngdjas.habitstracker.domain.service.core.Service;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
@@ -36,8 +37,8 @@ public class HabitService extends Service {
     public Habit add(String habitName, String description, boolean isDaily) {
         if (isAuth()) {
             User user = Session.getInstance().getUser();
-            if (!habitRepository.isExists(user.getID(), habitName)) {
-                Habit habit = new Habit(habitName, description, isDaily, user.getID());
+            if (!habitRepository.isExists(user.getId(), habitName)) {
+                Habit habit = new Habit(habitName, description, isDaily, user.getId());
                 habitRepository.create(habit);
                 return habit;
             }
@@ -59,8 +60,8 @@ public class HabitService extends Service {
     public Habit update(String currentHabitName, String habitName, String description, boolean isDaily) {
         if (isAuth()) {
             User user = Session.getInstance().getUser();
-            if (!habitRepository.isExists(user.getID(), habitName)) {
-                Habit habit = habitRepository.retrieveByUserIDAndName(user.getID(), currentHabitName);
+            if (!habitRepository.isExists(user.getId(), habitName)) {
+                Habit habit = habitRepository.retrieveByUserIDAndName(user.getId(), currentHabitName);
                 if (habit != null) {
                     habit.setName(habitName);
                     habit.setDescription(description);
@@ -87,9 +88,9 @@ public class HabitService extends Service {
     public Habit delete(String habitName) {
         if (isAuth()) {
             User user = Session.getInstance().getUser();
-            Habit habit = habitRepository.retrieveByUserIDAndName(user.getID(), habitName);
+            Habit habit = habitRepository.retrieveByUserIDAndName(user.getId(), habitName);
             if (habit != null) {
-                habitRepository.delete(habit.getID());
+                habitRepository.delete(habit.getId());
                 System.out.printf("Привычка %s у пользователя %s удалена\n", habitName, user.getEmail());
                 return habit;
             }
@@ -108,7 +109,7 @@ public class HabitService extends Service {
     public Habit get(String habitName) {
         if (isAuth()) {
             User user = Session.getInstance().getUser();
-            Habit habit = habitRepository.retrieveByUserIDAndName(user.getID(), habitName);
+            Habit habit = habitRepository.retrieveByUserIDAndName(user.getId(), habitName);
             if (habit != null) {
                 System.out.println(habit);
                 return habit;
@@ -128,7 +129,7 @@ public class HabitService extends Service {
         List<Habit> habits = new ArrayList<>();
         if (isAuth()) {
             User user = Session.getInstance().getUser();
-            habits = habitRepository.listByUserID(user.getID());
+            habits = habitRepository.listByUserID(user.getId());
             if (habits.isEmpty()) {
                 System.out.printf("Привычки у пользователя %s не найдены", user.getEmail());
             } else {
@@ -152,7 +153,7 @@ public class HabitService extends Service {
                 Habit habit = get(habitName);
                 if (habit != null) {
                     LocalDate noteDate = date.isBlank() ? LocalDate.now() : LocalDate.parse(date);
-                    return statisticRepository.note(habit.getID(), noteDate);
+                    return statisticRepository.note(habit.getId(), noteDate);
                 }
             } catch (DateTimeParseException exception) {
                 System.out.println("Неверный формат даты");
@@ -171,7 +172,7 @@ public class HabitService extends Service {
         if (isAuth()) {
             List<Habit> habits = getAll();
             for (Habit habit : habits) {
-                streaks.put(habit.getName(), statisticRepository.getStreak(habit.getID()));
+                streaks.put(habit.getName(), statisticRepository.getStreak(habit.getId()));
             }
         }
         return streaks;
@@ -195,7 +196,7 @@ public class HabitService extends Service {
                     LocalDate noteBeginDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(beginDate);
                     LocalDate noteEndDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(endDate);
                     System.out.printf("Процент успеха по привычке %s:\n", habit.getName());
-                    result = statisticRepository.getHit(habit.getID(), noteBeginDate, noteEndDate);
+                    result = statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate);
                 }
             } catch (DateTimeParseException exception) {
                 System.out.println("Неверный формат даты");
@@ -222,7 +223,7 @@ public class HabitService extends Service {
                 LocalDate noteBeginDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(beginDate);
                 LocalDate noteEndDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(endDate);
                 for (Habit habit : habits) {
-                    result.put(habit, statisticRepository.getHit(habit.getID(), noteBeginDate, noteEndDate));
+                    result.put(habit, statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate));
                 }
                 System.out.printf("Отчёт по привычкам:\n%s\n", result);
                 return result;

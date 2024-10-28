@@ -1,6 +1,6 @@
 package ru.qngdjas.habitstracker.application.dto.user;
 
-public class LoginDTO {
+public class UserLoginDTO {
 
     private String email;
     private String password;

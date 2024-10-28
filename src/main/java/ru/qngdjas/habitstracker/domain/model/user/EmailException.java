@@ -1,8 +1,8 @@
 package ru.qngdjas.habitstracker.domain.model.user;
 
-public class EmailException extends Throwable {
+public class EmailException extends RuntimeException {
 
-    public EmailException(String message) {
-        super(message);
+    public EmailException() {
+        super("Неверный формат почты");
     }
 }

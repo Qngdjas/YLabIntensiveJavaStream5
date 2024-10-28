@@ -1,4 +1,4 @@
-package ru.qngdjas.habitstracker.infrastructure.utils.logger;
+package ru.qngdjas.habitstracker.application.utils.logger;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,7 @@
 package ru.qngdjas.habitstracker.application.mapper.model;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
@@ -12,7 +13,10 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "isAdmin", ignore = true)
     User toUser(UserCreateDTO user) throws EmailException;
 
-    User toUser(UserUpdateDTO user);
+    @Mapping(target = "isAdmin", ignore = true)
+    User toUser(UserUpdateDTO user) throws EmailException;
 }

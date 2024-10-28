@@ -14,10 +14,6 @@ public class User extends Model {
     private String name;
     private boolean isAdmin;
 
-    public User(String email, String password, String name, boolean isAdmin) throws EmailException {
-        this(-1, email, password, name, isAdmin);
-    }
-
     public User(long id, String email, String password, String name, boolean isAdmin) throws EmailException {
         super(id);
         setEmail(email);
@@ -33,7 +29,7 @@ public class User extends Model {
     public void setEmail(String email) throws EmailException {
         Matcher matcher = EMAIL_PATTERN.matcher(email);
         if (!matcher.matches()) {
-            throw new EmailException("Неверный формат почты");
+            throw new EmailException();
         }
         this.email = email;
     }

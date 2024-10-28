@@ -5,6 +5,7 @@ public class UserCreateDTO {
     private String email;
     private String password;
     private String name;
+    private boolean isAdmin;
 
     public String getEmail() {
         return email;
@@ -28,5 +29,13 @@ public class UserCreateDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 }

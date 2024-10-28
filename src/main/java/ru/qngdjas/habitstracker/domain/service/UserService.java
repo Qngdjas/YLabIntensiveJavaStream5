@@ -1,12 +1,18 @@
 package ru.qngdjas.habitstracker.domain.service;
 
-import ru.qngdjas.habitstracker.application.dto.user.LoginDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
 import ru.qngdjas.habitstracker.application.mapper.model.UserMapper;
+import ru.qngdjas.habitstracker.application.utils.validator.UserValidator;
+import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
+import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
+import ru.qngdjas.habitstracker.domain.service.core.IncorrectPasswordException;
+import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
+import ru.qngdjas.habitstracker.domain.service.core.Service;
 import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
@@ -43,18 +49,16 @@ public class UserService extends Service {
         return null;
     }
 
-    public User login(LoginDTO loginDTO) {
-        User user = userRepository.retrieveByEmail(loginDTO.getEmail());
-        if (user != null) {
-            if (user.getPassword().equals(loginDTO.getPassword())) {
-                System.out.printf("Пользователь %s авторизован\n", user.getEmail());
-                return user;
-            }
-            System.out.println("Пароль введен не верно");
-        } else {
-            System.out.println("Пользователь не найден");
+    public User login(UserLoginDTO userDTO) throws IncorrectPasswordException, NotFoundException {
+        UserValidator.validate(userDTO);
+        User user = userRepository.retrieveByEmail(userDTO.getEmail());
+        if (user == null) {
+            throw new NotFoundException("Пользователь не найден.");
         }
-        return null;
+        if (!user.getPassword().equals(userDTO.getPassword())) {
+            throw new IncorrectPasswordException();
+        }
+        return user;
     }
 
     /**
@@ -72,7 +76,7 @@ public class UserService extends Service {
             System.out.println("Пользователь с таким email уже существует");
         } else {
             try {
-                User user = userRepository.create(new User(email, password, name, isAdmin));
+                User user = userRepository.create(new User(-1, email, password, name, isAdmin));
                 Session.getInstance().setUser(user);
                 return user;
             } catch (EmailException exception) {
@@ -82,17 +86,12 @@ public class UserService extends Service {
         return null;
     }
 
-    public User register(UserCreateDTO userDTO) {
+    public User register(UserCreateDTO userDTO) throws EmailException, ValidationException {
+        UserValidator.validate(userDTO);
         if (userRepository.isExists(userDTO.getEmail())) {
-            System.out.println("Пользователь с таким email уже существует");
-        } else {
-            try {
-                return userRepository.create(mapper.toUser(userDTO));
-            } catch (EmailException exception) {
-                System.out.println(exception.getMessage());
-            }
+            throw new AlreadyExistsException("Пользователь с таким email уже существует.");
         }
-        return null;
+        return userRepository.create(mapper.toUser(userDTO));
     }
 
     /**
@@ -131,7 +130,11 @@ public class UserService extends Service {
     public User update(UserUpdateDTO userDTO) {
         if (isAuth()) {
             if (!userRepository.isExists(userDTO.getEmail())) {
-                return userRepository.update(mapper.toUser(userDTO));
+                try {
+                    return userRepository.update(mapper.toUser(userDTO));
+                } catch (EmailException exception) {
+                    System.out.println(exception.getMessage());
+                }
             } else {
                 System.out.println("Email занят");
             }
@@ -151,8 +154,8 @@ public class UserService extends Service {
             if (Session.getInstance().getUser().getEmail().equals(email) || isAdmin()) {
                 User user = userRepository.retrieveByEmail(email);
                 if (user != null) {
-                    userRepository.delete(user.getID());
-                    if (Session.getInstance().getUser().getID() == user.getID()) {
+                    userRepository.delete(user.getId());
+                    if (Session.getInstance().getUser().getId() == user.getId()) {
                         Session.getInstance().setUser(null);
                     }
                     System.out.printf("Пользователь %s удален\n", user.getEmail());
@@ -167,16 +170,16 @@ public class UserService extends Service {
     public User delete(long id) {
         if (isAuth()) {
 //            if (Session.getInstance().getUser().getEmail().equals(email) || isAdmin()) {
-                User user = userRepository.retrieve(id);
-                if (user != null) {
-                    userRepository.delete(user.getID());
-                    if (Session.getInstance().getUser().getID() == user.getID()) {
-                        Session.getInstance().setUser(null);
-                    }
-                    System.out.printf("Пользователь %s удален\n", user.getEmail());
-                    return user;
+            User user = userRepository.retrieve(id);
+            if (user != null) {
+                userRepository.delete(user.getId());
+                if (Session.getInstance().getUser().getId() == user.getId()) {
+                    Session.getInstance().setUser(null);
                 }
-                System.out.println("Пользователь не найден");
+                System.out.printf("Пользователь %s удален\n", user.getEmail());
+                return user;
+            }
+            System.out.println("Пользователь не найден");
 //            }
         }
         return null;

@@ -6,6 +6,7 @@ public class UserUpdateDTO {
     private String email;
     private String password;
     private String name;
+    private boolean isAdmin;
 
     public long getId() {
         return id;
@@ -37,5 +38,13 @@ public class UserUpdateDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 }

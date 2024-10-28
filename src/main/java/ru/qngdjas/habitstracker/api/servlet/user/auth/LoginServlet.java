@@ -6,10 +6,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.qngdjas.habitstracker.api.servlet.user.BaseUserServlet;
-import ru.qngdjas.habitstracker.application.dto.MessageDTO;
-import ru.qngdjas.habitstracker.application.dto.user.LoginDTO;
-import ru.qngdjas.habitstracker.application.mapper.json.UserJSONMapper;
+import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.domain.model.user.User;
+import ru.qngdjas.habitstracker.domain.service.core.IncorrectPasswordException;
+import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 
 import java.io.IOException;
 
@@ -18,17 +19,23 @@ public class LoginServlet extends BaseUserServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LoginDTO loginDTO = mapper.toLoginDTO(req.getInputStream());
-        User user = userService.login(loginDTO);
-        MessageDTO messageDTO = new MessageDTO();
-        if (user != null) {
+        UserLoginDTO userDTO = mapper.toLoginDTO(req.getInputStream());
+        try {
+            User user = userService.login(userDTO);
             HttpSession httpSession = req.getSession(true);
             httpSession.setAttribute("email", user.getEmail());
-            messageDTO.setMessage(String.format("Пользователь %s успешно аутентифицирован.", user.getEmail()));
-        } else {
-            messageDTO.setMessage("Неверные учетные данные.");
+            resp.getWriter()
+                    .write(messageMapper.toJson(
+                            new SingleMessageDTO(
+                                    String.format("Пользователь %s успешно аутентифицирован.", user.getEmail())
+                            )
+                    ));
+        } catch (IncorrectPasswordException exception) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
+        } catch (NotFoundException exception) {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
         }
-        resp.getWriter().write(messageMapper.toJson(messageDTO));
     }
 }

@@ -22,7 +22,7 @@ public class UserRepository implements IUserRepository {
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
-            instance.setID(resultSet.getLong(1));
+            instance.setId(resultSet.getLong(1));
             System.out.printf("Пользователь %s зарегистрирован\n", instance.getEmail());
         } catch (SQLException exception) {
             System.out.printf("Не удалось добавить пользователя:\n%s\n", exception);
@@ -39,7 +39,7 @@ public class UserRepository implements IUserRepository {
             preparedStatement.setString(2, instance.getPassword());
             preparedStatement.setString(3, instance.getName());
             preparedStatement.setBoolean(4, instance.isAdmin());
-            preparedStatement.setLong(5, instance.getID());
+            preparedStatement.setLong(5, instance.getId());
             int result = preparedStatement.executeUpdate();
             if (result > 0) {
                 System.out.printf("Пользователь %s обновлен\n", instance.getEmail());

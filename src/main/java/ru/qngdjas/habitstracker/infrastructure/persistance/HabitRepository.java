@@ -21,7 +21,7 @@ public class HabitRepository implements IHabitRepository {
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
-            instance.setID(resultSet.getLong(1));
+            instance.setId(resultSet.getLong(1));
             System.out.println("Привычка добавлена");
         } catch (SQLException exception) {
             System.out.printf("Не удалось добавить привычку:\n%s\n", exception);
@@ -37,7 +37,7 @@ public class HabitRepository implements IHabitRepository {
             preparedStatement.setString(1, instance.getName());
             preparedStatement.setString(2, instance.getDescription());
             preparedStatement.setBoolean(3, instance.isDaily());
-            preparedStatement.setLong(4, instance.getID());
+            preparedStatement.setLong(4, instance.getId());
             int result = preparedStatement.executeUpdate();
             if (result > 0) {
                 System.out.println("Привычка обновлена");
