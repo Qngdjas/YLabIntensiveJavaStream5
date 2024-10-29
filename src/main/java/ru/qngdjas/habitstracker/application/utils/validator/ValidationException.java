@@ -1,6 +1,5 @@
 package ru.qngdjas.habitstracker.application.utils.validator;
 
-import java.util.List;
 import java.util.Map;
 
 public class ValidationException extends RuntimeException {

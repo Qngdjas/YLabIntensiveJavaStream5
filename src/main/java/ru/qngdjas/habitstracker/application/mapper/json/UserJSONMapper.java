@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
-import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,19 +16,19 @@ public class UserJSONMapper {
 
     public UserJSONMapper() {
         objectMapper = new ObjectMapper();
-//        objectMapper.configure(DeserializationFeature.)
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     public UserLoginDTO toLoginDTO(InputStream json) throws IOException {
         return objectMapper.readValue(json, UserLoginDTO.class);
     }
 
-    public UserCreateDTO toUserCreateDTO(InputStream json) throws IOException {
-        return objectMapper.readValue(json, UserCreateDTO.class);
+    public UserDTO toUserDTO(InputStream json) throws IOException {
+        return objectMapper.readValue(json, UserDTO.class);
     }
 
-    public UserUpdateDTO toUserUpdateDTO(InputStream json) throws IOException {
-        return objectMapper.readValue(json, UserUpdateDTO.class);
+    public UserCreateDTO toUserCreateDTO(InputStream json) throws IOException {
+        return objectMapper.readValue(json, UserCreateDTO.class);
     }
 }

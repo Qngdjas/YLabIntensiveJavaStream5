@@ -12,10 +12,6 @@ public class Habit extends Model {
     private final LocalDate createdAt;
     private final long userId;
 
-    public Habit(String name, String description, boolean isDaily, long userId) {
-        this(-1, name, description, isDaily, LocalDate.now(), userId);
-    }
-
     public Habit(long id, String name, String description, boolean isDaily, LocalDate createdAt, long userId) {
         super(id);
         this.name = name;

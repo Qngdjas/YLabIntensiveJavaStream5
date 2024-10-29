@@ -2,22 +2,18 @@ package ru.qngdjas.habitstracker.api.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
+import ru.qngdjas.habitstracker.api.servlet.core.BaseServlet;
+import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
 
 import java.io.IOException;
 
 @WebServlet("/")
-public class IndexServlet extends HttpServlet {
+public class IndexServlet extends BaseServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("name");
-        if (name == null || name.isEmpty()) {
-            name = "world";
-        }
         resp.setContentType("application/json");
-        resp.getWriter().print("{ \"hello\": \"" + name + "!\" }\n" + req.getPathInfo());
+        resp.getWriter().print(messageMapper.toJson(new SingleMessageDTO("Информационная страница!")));
     }
 }

@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import ru.qngdjas.habitstracker.application.dto.message.MultipleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
-import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
@@ -25,7 +25,7 @@ public class UserServlet extends BaseUserServlet {
             String[] urlParts = req.getPathInfo().substring(1).split("/");
             if (urlParts.length == 1) {
                 try {
-                    UserUpdateDTO userDTO = mapper.toUserUpdateDTO(req.getInputStream());
+                    UserDTO userDTO = mapper.toUserDTO(req.getInputStream());
                     userDTO.setId(Long.parseLong(urlParts[0]));
                     User user = userService.update((long) session.getAttribute("userId"), userDTO);
                     resp.getWriter().write(messageMapper.toJson(

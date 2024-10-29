@@ -1,15 +1,13 @@
 package ru.qngdjas.habitstracker.application.utils.validator;
 
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
-import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserValidator {
-
-    private static final String REQUIRED = "Поле обязательно";
+public class UserValidator extends Validator {
 
     public static void validate(UserLoginDTO userDTO) throws ValidationException {
         Map<String, String> errors = new HashMap<>();
@@ -47,7 +45,7 @@ public class UserValidator {
         }
     }
 
-    public static void validate(UserUpdateDTO userDTO) {
+    public static void validate(UserDTO userDTO) {
         Map<String, String> errors = new HashMap<>();
 
         if (userDTO.getId() <= 0) {
@@ -69,9 +67,5 @@ public class UserValidator {
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);
         }
-    }
-
-    private static boolean isEmpty(String field) {
-        return field == null || field.isBlank();
     }
 }

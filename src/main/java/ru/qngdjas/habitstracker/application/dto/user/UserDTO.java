@@ -1,6 +1,6 @@
 package ru.qngdjas.habitstracker.application.dto.user;
 
-public class UserUpdateDTO {
+public class UserDTO {
 
     private long id;
     private String email;

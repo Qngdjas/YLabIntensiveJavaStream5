@@ -1,9 +1,16 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
+import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
+import ru.qngdjas.habitstracker.application.mapper.model.HabitMapper;
+import ru.qngdjas.habitstracker.application.utils.validator.HabitValidator;
+import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IHabitRepository;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
+import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
+import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 import ru.qngdjas.habitstracker.domain.service.core.Service;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitNotesRepository;
@@ -23,7 +30,7 @@ public class HabitService extends Service {
      */
     private static final IHabitRepository habitRepository = new HabitRepository();
     private static final IHabitNotesRepository statisticRepository = new HabitNotesRepository();
-
+    private static final HabitMapper mapper = HabitMapper.INSTANCE;
 
     /**
      * Метод добавления привычки.
@@ -38,13 +45,21 @@ public class HabitService extends Service {
         if (isAuth()) {
             User user = Session.getInstance().getUser();
             if (!habitRepository.isExists(user.getId(), habitName)) {
-                Habit habit = new Habit(habitName, description, isDaily, user.getId());
+                Habit habit = new Habit(-1, habitName, description, isDaily, LocalDate.now(), user.getId());
                 habitRepository.create(habit);
                 return habit;
             }
             System.out.printf("Привычка %s у пользователя %s уже существует", habitName, user.getEmail());
         }
         return null;
+    }
+
+    public Habit add(HabitCreateDTO habitDTO) throws ValidationException, AlreadyExistsException {
+        HabitValidator.validate(habitDTO);
+        if (habitRepository.isExists(habitDTO.getUserId(), habitDTO.getName())) {
+            throw new AlreadyExistsException(String.format("Привычка %s у пользователя уже существует", habitDTO.getName()));
+        }
+        return habitRepository.create(mapper.toHabit(habitDTO));
     }
 
     /**
@@ -76,6 +91,18 @@ public class HabitService extends Service {
             }
         }
         return null;
+    }
+
+    public Habit update(HabitDTO habitDTO) throws ValidationException, AlreadyExistsException, RootlessException {
+        HabitValidator.validate(habitDTO);
+        if (habitRepository.isExists(habitDTO.getUserId(), habitDTO.getName())) {
+            throw new AlreadyExistsException(String.format("Привычка %s уже существует", habitDTO.getName()));
+        }
+//        Habit habit = habitRepository.retrieveByUserIDAndID(habitDTO.getUserId(), habitDTO.getName());
+//        if (id == habitDTO.getUserId()) {
+        return habitRepository.update(mapper.toHabit(habitDTO));
+//        }
+//        throw new RootlessException();
     }
 
     /**

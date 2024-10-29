@@ -1,8 +1,8 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
-import ru.qngdjas.habitstracker.application.dto.user.UserUpdateDTO;
 import ru.qngdjas.habitstracker.application.mapper.model.UserMapper;
 import ru.qngdjas.habitstracker.application.utils.validator.UserValidator;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
@@ -21,8 +21,8 @@ public class UserService extends Service {
     /**
      * Репозиторий CRUD-операций над моделями пользователей.
      */
-    private final static IUserRepository userRepository = new UserRepository();
-    private final static UserMapper mapper = UserMapper.INSTANCE;
+    private static final IUserRepository userRepository = new UserRepository();
+    private static final UserMapper mapper = UserMapper.INSTANCE;
 
     /**
      * Метод аутентификации пользователя по почте и паролю.
@@ -124,7 +124,7 @@ public class UserService extends Service {
         return null;
     }
 
-    public User update(long id, UserUpdateDTO userDTO) throws EmailException, ValidationException, AlreadyExistsException, RootlessException {
+    public User update(long id, UserDTO userDTO) throws EmailException, ValidationException, AlreadyExistsException, RootlessException {
         UserValidator.validate(userDTO);
         if (userRepository.isExists(userDTO.getEmail())) {
             throw new AlreadyExistsException("Email занят.");

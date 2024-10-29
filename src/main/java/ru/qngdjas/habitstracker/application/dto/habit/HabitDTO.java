@@ -1,11 +1,20 @@
 package ru.qngdjas.habitstracker.application.dto.habit;
 
-public class HabitCreateDTO {
+public class HabitDTO {
 
+    private long id;
     private String name;
     private String description;
     private boolean isDaily = true;
     private long userId;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
