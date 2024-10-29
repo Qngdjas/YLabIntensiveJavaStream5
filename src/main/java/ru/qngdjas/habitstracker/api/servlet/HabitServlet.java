@@ -30,6 +30,8 @@ public class HabitServlet extends HttpServlet {
             name = "world";
         }
         resp.setContentType("application/json");
-        resp.getWriter().print("{ \"hello habit\": \"" + name + "!\" }\n" + req.getPathInfo());
+        String[] split = req.getPathInfo().substring(1).split("/");
+        resp.getWriter().print("{ \"hello\": \"" + name + "!\" }\n" + req.getPathInfo() + "<br>" + req.getQueryString());
     }
+
 }

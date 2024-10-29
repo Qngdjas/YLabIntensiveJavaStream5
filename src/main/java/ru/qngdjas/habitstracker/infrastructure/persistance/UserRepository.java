@@ -81,7 +81,13 @@ public class UserRepository implements IUserRepository {
             preparedStatement.setString(1, email);
             ResultSet result = preparedStatement.executeQuery();
             if (result.next()) {
-                return new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getBoolean(5));
+                return new User(
+                        result.getInt(1),
+                        result.getString(2),
+                        result.getString(3),
+                        result.getString(4),
+                        result.getBoolean(5)
+                );
             }
         } catch (SQLException | EmailException exception) {
             System.out.printf("Не удалось получить пользователя:\n%s\n", exception);
@@ -121,4 +127,5 @@ public class UserRepository implements IUserRepository {
         }
         return isExists;
     }
+
 }

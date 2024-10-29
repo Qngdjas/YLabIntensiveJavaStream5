@@ -16,6 +16,7 @@ public class UserJSONMapper {
 
     public UserJSONMapper() {
         objectMapper = new ObjectMapper();
+//        objectMapper.configure(DeserializationFeature.)
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 

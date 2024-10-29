@@ -9,10 +9,7 @@ import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
-import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
-import ru.qngdjas.habitstracker.domain.service.core.IncorrectPasswordException;
-import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
-import ru.qngdjas.habitstracker.domain.service.core.Service;
+import ru.qngdjas.habitstracker.domain.service.core.*;
 import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
 import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
@@ -86,7 +83,7 @@ public class UserService extends Service {
         return null;
     }
 
-    public User register(UserCreateDTO userDTO) throws EmailException, ValidationException {
+    public User register(UserCreateDTO userDTO) throws EmailException, ValidationException, AlreadyExistsException {
         UserValidator.validate(userDTO);
         if (userRepository.isExists(userDTO.getEmail())) {
             throw new AlreadyExistsException("Пользователь с таким email уже существует.");
@@ -127,19 +124,16 @@ public class UserService extends Service {
         return null;
     }
 
-    public User update(UserUpdateDTO userDTO) {
-        if (isAuth()) {
-            if (!userRepository.isExists(userDTO.getEmail())) {
-                try {
-                    return userRepository.update(mapper.toUser(userDTO));
-                } catch (EmailException exception) {
-                    System.out.println(exception.getMessage());
-                }
-            } else {
-                System.out.println("Email занят");
-            }
+    public User update(long id, UserUpdateDTO userDTO) throws EmailException, ValidationException, AlreadyExistsException, RootlessException {
+        UserValidator.validate(userDTO);
+        if (userRepository.isExists(userDTO.getEmail())) {
+            throw new AlreadyExistsException("Email занят.");
         }
-        return null;
+        if (id == userDTO.getId() || userRepository.retrieve(id).isAdmin()) {
+            userDTO.setId(id);
+            return userRepository.update(mapper.toUser(userDTO));
+        }
+        throw new RootlessException();
     }
 
     /**
@@ -167,21 +161,15 @@ public class UserService extends Service {
         return null;
     }
 
-    public User delete(long id) {
-        if (isAuth()) {
-//            if (Session.getInstance().getUser().getEmail().equals(email) || isAdmin()) {
-            User user = userRepository.retrieve(id);
-            if (user != null) {
-                userRepository.delete(user.getId());
-                if (Session.getInstance().getUser().getId() == user.getId()) {
-                    Session.getInstance().setUser(null);
-                }
-                System.out.printf("Пользователь %s удален\n", user.getEmail());
-                return user;
-            }
-            System.out.println("Пользователь не найден");
-//            }
+    public User delete(long id, long idToDelete) {
+        User user = userRepository.retrieve(idToDelete);
+        if (user == null) {
+            throw new NotFoundException("Пользователь не найден.");
         }
-        return null;
+        if (id == idToDelete || userRepository.retrieve(id).isAdmin()) {
+            userRepository.delete(idToDelete);
+            return user;
+        }
+        throw new RootlessException();
     }
 }

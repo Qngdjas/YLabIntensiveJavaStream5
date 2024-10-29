@@ -21,11 +21,12 @@ public class RegistrationServlet extends BaseUserServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserCreateDTO userDTO = mapper.toUserCreateDTO(req.getInputStream());
+        resp.setContentType("application/json");
         try {
+            UserCreateDTO userDTO = mapper.toUserCreateDTO(req.getInputStream());
             User user = userService.register(userDTO);
             HttpSession httpSession = req.getSession(true);
-            httpSession.setAttribute("email", user.getEmail());
+            httpSession.setAttribute("userId", user.getId());
             resp.getWriter().write(messageMapper.toJson(
                     new SingleMessageDTO(String.format("Пользователь %s успешно зарегистрирован.", user.getEmail()))
             ));

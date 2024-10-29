@@ -19,11 +19,12 @@ public class LoginServlet extends BaseUserServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserLoginDTO userDTO = mapper.toLoginDTO(req.getInputStream());
+        resp.setContentType("application/json");
         try {
+            UserLoginDTO userDTO = mapper.toLoginDTO(req.getInputStream());
             User user = userService.login(userDTO);
             HttpSession httpSession = req.getSession(true);
-            httpSession.setAttribute("email", user.getEmail());
+            httpSession.setAttribute("userId", user.getId());
             resp.getWriter()
                     .write(messageMapper.toJson(
                             new SingleMessageDTO(
