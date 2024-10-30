@@ -3,11 +3,11 @@ package ru.qngdjas.habitstracker.domain.service;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.NotedDateDTO;
+import ru.qngdjas.habitstracker.application.dto.habit.NotedPeriodDTO;
 import ru.qngdjas.habitstracker.application.mapper.model.HabitMapper;
 import ru.qngdjas.habitstracker.application.utils.validator.HabitValidator;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.Habit;
-import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IHabitRepository;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
@@ -16,7 +16,6 @@ import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 import ru.qngdjas.habitstracker.domain.service.core.Service;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitNotesRepository;
-import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -140,7 +139,7 @@ public class HabitService extends Service {
      * @param userId Идентификатор пользователя, выполняющего операцию.
      * @return Словарь привычек с указанием текущей серии.
      */
-    public Map<String, String> getStreak(long userId) {
+    public Map<String, String> getStreak(long userId) throws NotFoundException {
         Map<String, String> streaks = new HashMap<>();
         List<Habit> habits = getAll(userId);
         for (Habit habit : habits) {
@@ -153,53 +152,41 @@ public class HabitService extends Service {
      * Метод получения успеваемости по конкретной привычке за период.
      * <p>Если дата не задана явно, используются текущие сутки.
      *
-     * @param userId    Идентификатор пользователя, выполняющего операцию.
-     * @param id        Идентификатор привычки.
-     * @param beginDate Дата начала отчетного периода.
-     * @param endDate   Дата завершения отчетного периода.
+     * @param userId         Идентификатор пользователя, выполняющего операцию.
+     * @param id             Идентификатор привычки.
+     * @param notedPeriodDTO Данные отчетного периода.
      * @return Процент успеваемости по привычке.
      */
-    public double getHit(long userId, long id, String beginDate, String endDate) {
-        double result = 0.0f;
-        try {
-            Habit habit = get(userId, id);
-            if (habit != null) {
-                LocalDate noteBeginDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(beginDate);
-                LocalDate noteEndDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(endDate);
-                System.out.printf("Процент успеха по привычке %s:\n", habit.getName());
-                result = statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate);
-            }
-        } catch (DateTimeParseException exception) {
-            System.out.println("Неверный формат даты");
-        } catch (IllegalArgumentException exception) {
-            System.out.println(exception.getMessage());
-        }
-        return result;
+    public String getHit(long userId, long id, NotedPeriodDTO notedPeriodDTO) throws RootlessException, NotFoundException, DateTimeParseException, IllegalArgumentException {
+        Habit habit = get(userId, id);
+        LocalDate noteBeginDate = notedPeriodDTO.getBeginDate() == null || notedPeriodDTO.getBeginDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getBeginDate());
+        LocalDate noteEndDate = notedPeriodDTO.getEndDate() == null || notedPeriodDTO.getEndDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getEndDate());
+        return statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate);
     }
 
     /**
      * Метод получения успеваемости по всем привычкам пользователя за период.
      * <p>Если дата не задана явно, используются текущие сутки.
      *
-     * @param beginDate Дата начала отчетного периода.
-     * @param endDate   Дата завершения отчетного периода.
+     * @param userId         Идентификатор пользователя, выполняющего операцию.
+     * @param notedPeriodDTO Данные отчетного периода.
      * @return Словарь привычек с указанием успеваемости.
      */
-    public Map<Habit, Double> getHits(String beginDate, String endDate) {
-        Map<Habit, Double> result = new HashMap<>();
-        try {
-            List<Habit> habits = new ArrayList<>();//getAll();
-            LocalDate noteBeginDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(beginDate);
-            LocalDate noteEndDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(endDate);
-            for (Habit habit : habits) {
-                result.put(habit, statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate));
-            }
-            System.out.printf("Отчёт по привычкам:\n%s\n", result);
-            return result;
-        } catch (DateTimeParseException exception) {
-            System.out.println("Неверный формат даты");
-        } catch (IllegalArgumentException exception) {
-            System.out.println(exception.getMessage());
+    public Map<String, String> getHits(long userId, NotedPeriodDTO notedPeriodDTO) throws RootlessException, NotFoundException, DateTimeParseException, IllegalArgumentException {
+        Map<String, String> result = new HashMap<>();
+        List<Habit> habits = getAll(userId);
+        LocalDate noteBeginDate = notedPeriodDTO.getBeginDate() == null || notedPeriodDTO.getBeginDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getBeginDate());
+        LocalDate noteEndDate = notedPeriodDTO.getEndDate() == null || notedPeriodDTO.getEndDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getEndDate());
+        for (Habit habit : habits) {
+            result.put(habit.getName(), statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate));
         }
         return result;
     }

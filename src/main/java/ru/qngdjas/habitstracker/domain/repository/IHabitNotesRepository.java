@@ -34,6 +34,6 @@ public interface IHabitNotesRepository {
      * @param endDate   Дата завершения периода.
      * @return Процент успешного выполнения привычки.
      */
-    double getHit(long habitID, LocalDate beginDate, LocalDate endDate);
+    String getHit(long habitID, LocalDate beginDate, LocalDate endDate);
 
 }

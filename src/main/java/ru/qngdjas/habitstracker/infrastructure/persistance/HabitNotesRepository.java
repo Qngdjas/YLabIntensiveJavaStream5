@@ -46,7 +46,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     }
 
     @Override
-    public double getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
+    public String getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
         if (!beginDate.isAfter(endDate)) {
             double hit = 0.0;
             String sql = "CALL gethabithit(?, ?, ?, ?)";
@@ -62,7 +62,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
             } catch (SQLException exception) {
                 System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
             }
-            return hit;
+            return String.valueOf(hit);
         }
         throw new IllegalArgumentException("Дата конца периода не может быть меньше даты начала периода");
     }
