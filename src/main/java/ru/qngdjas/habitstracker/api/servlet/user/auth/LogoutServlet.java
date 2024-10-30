@@ -23,10 +23,10 @@ public class LogoutServlet extends BaseServlet {
             Cookie sessionCookie = new Cookie("JSESSIONID", null);
             sessionCookie.setMaxAge(0);
             resp.addCookie(sessionCookie);
-            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Выполнен выход из системы.")));
+            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Выполнен выход из системы")));
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Не найдена активная сессия.")));
+            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Не найдена активная сессия")));
         }
     }
 

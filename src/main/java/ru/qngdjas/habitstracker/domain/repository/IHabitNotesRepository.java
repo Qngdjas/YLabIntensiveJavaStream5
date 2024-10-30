@@ -24,7 +24,7 @@ public interface IHabitNotesRepository {
      * @param habitID Идентификатор привычки.
      * @return Количество подряд выполненных привычек за последнюю серию.
      */
-    long getStreak(long habitID);
+    String getStreak(long habitID);
 
     /**
      * Метод получения процента успешного выполнения конкретной привычки за период.

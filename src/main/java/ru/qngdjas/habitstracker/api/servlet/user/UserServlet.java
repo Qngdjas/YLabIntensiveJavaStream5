@@ -10,6 +10,7 @@ import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
+import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
 import java.io.IOException;
@@ -22,20 +23,25 @@ public class UserServlet extends BaseUserServlet {
         resp.setContentType("application/json");
         HttpSession session = req.getSession(false);
         if (session != null) {
-            String[] urlParts = req.getPathInfo().substring(1).split("/");
+            String[] urlParts = req.getPathInfo() != null && !req.getPathInfo().substring(1).isBlank() ?
+                    req.getPathInfo().substring(1).split("/") :
+                    new String[0];
             if (urlParts.length == 1) {
                 try {
                     UserDTO userDTO = mapper.toUserDTO(req.getInputStream());
                     userDTO.setId(Long.parseLong(urlParts[0]));
                     User user = userService.update((long) session.getAttribute("userId"), userDTO);
                     resp.getWriter().write(messageMapper.toJson(
-                            new SingleMessageDTO(String.format("Пользователь %s успешно обновлен.", user.getEmail()))
+                            new SingleMessageDTO(String.format("Пользователь %s успешно обновлен", user.getEmail()))
                     ));
                 } catch (NumberFormatException exception) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Некорректный id пользователя.")));
+                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Некорректный id пользователя")));
                 } catch (EmailException exception) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
+                } catch (NotFoundException exception) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
                 } catch (ValidationException exception) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -49,11 +55,11 @@ public class UserServlet extends BaseUserServlet {
                 }
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Неизвестный API URL.")));
+                resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Неизвестный API URL")));
             }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Действие доступно только аутентифицированным пользователям.")));
+            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Действие доступно только аутентифицированным пользователям")));
         }
     }
 
@@ -62,7 +68,9 @@ public class UserServlet extends BaseUserServlet {
         resp.setContentType("application/json");
         HttpSession session = req.getSession(false);
         if (session != null) {
-            String[] urlParts = req.getPathInfo().substring(1).split("/");
+            String[] urlParts = req.getPathInfo() != null && !req.getPathInfo().substring(1).isBlank() ?
+                    req.getPathInfo().substring(1).split("/") :
+                    new String[0];
             if (urlParts.length == 1) {
                 try {
                     User user = userService.delete((long) session.getAttribute("userId"), Long.parseLong(urlParts[0]));
@@ -71,31 +79,25 @@ public class UserServlet extends BaseUserServlet {
                     sessionCookie.setMaxAge(0);
                     resp.addCookie(sessionCookie);
                     resp.getWriter().write(messageMapper.toJson(
-                            new SingleMessageDTO(String.format("Пользователь %s успешно удален.", user.getEmail()))
+                            new SingleMessageDTO(String.format("Пользователь %s успешно удален", user.getEmail()))
                     ));
                 } catch (NumberFormatException exception) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Некорректный id пользователя.")));
-                } catch (EmailException exception) {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
-                } catch (ValidationException exception) {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    resp.getWriter().write(messageMapper.toJson(new MultipleMessageDTO(exception.getErrors())));
-                } catch (AlreadyExistsException exception) {
-                    resp.setStatus(HttpServletResponse.SC_CONFLICT);
-                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
+                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Некорректный id пользователя")));
                 } catch (RootlessException exception) {
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
+                } catch (NotFoundException exception) {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO(exception.getMessage())));
                 }
             } else {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Неизвестный API URL.")));
+                resp.getWriter().write(messageMapper.toJson(new SingleMessageDTO("Неизвестный API URL")));
             }
         } else {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Действие доступно только аутентифицированным пользователям.")));
+            resp.getWriter().println(messageMapper.toJson(new SingleMessageDTO("Действие доступно только аутентифицированным пользователям")));
         }
     }
 }

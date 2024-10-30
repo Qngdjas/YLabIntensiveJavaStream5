@@ -29,7 +29,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     }
 
     @Override
-    public long getStreak(long habitID) {
+    public String getStreak(long habitID) {
         int streak = 0;
         String sql = "CALL getactualhabitstreak(?, ?)";
         Connection connection = ConnectionManager.getInstance().getConnection();
@@ -42,7 +42,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
         } catch (SQLException exception) {
             System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
         }
-        return streak;
+        return String.valueOf(streak);
     }
 
     @Override

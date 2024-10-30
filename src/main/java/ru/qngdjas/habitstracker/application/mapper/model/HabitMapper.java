@@ -13,13 +13,9 @@ public interface HabitMapper {
     HabitMapper INSTANCE = Mappers.getMapper(HabitMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "description", ignore = true)
-    @Mapping(target = "isDaily", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
     Habit toHabit(HabitCreateDTO habitDTO);
 
-    @Mapping(target = "description", ignore = true)
-    @Mapping(target = "isDaily", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
     Habit toHabit(HabitDTO habitDTO);
+
+    HabitDTO toDto(Habit habit);
 }

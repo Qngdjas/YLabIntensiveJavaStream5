@@ -6,6 +6,7 @@ import ru.qngdjas.habitstracker.application.dto.message.MultipleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class MessageJSONMapper {
 

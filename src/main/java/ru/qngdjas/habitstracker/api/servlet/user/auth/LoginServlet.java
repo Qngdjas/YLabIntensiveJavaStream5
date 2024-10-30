@@ -28,7 +28,7 @@ public class LoginServlet extends BaseUserServlet {
             resp.getWriter()
                     .write(messageMapper.toJson(
                             new SingleMessageDTO(
-                                    String.format("Пользователь %s успешно аутентифицирован.", user.getEmail())
+                                    String.format("Пользователь %s успешно аутентифицирован", user.getEmail())
                             )
                     ));
         } catch (IncorrectPasswordException exception) {

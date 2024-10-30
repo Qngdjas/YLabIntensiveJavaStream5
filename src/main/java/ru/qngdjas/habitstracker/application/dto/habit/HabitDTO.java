@@ -1,5 +1,7 @@
 package ru.qngdjas.habitstracker.application.dto.habit;
 
+import java.time.LocalDate;
+
 public class HabitDTO {
 
     private long id;

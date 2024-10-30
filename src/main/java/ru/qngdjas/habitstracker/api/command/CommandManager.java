@@ -52,7 +52,7 @@ public class CommandManager {
                 String password = reader.nextLine();
                 System.out.println("Введите имя");
                 String name = reader.nextLine();
-                User user = userService.register(email, password, name, false);
+//                User user = userService.register(email, password, name, false);
                 System.out.println("Выполнено");
             }
         },
@@ -67,7 +67,7 @@ public class CommandManager {
                 String email = reader.nextLine();
                 System.out.println("Введите пароль");
                 String password = reader.nextLine();
-                User user = userService.login(email, password);
+//                User user = userService.login(email, password);
                 System.out.println("Выполнено");
             }
 
@@ -85,13 +85,13 @@ public class CommandManager {
                 String password = reader.nextLine();
                 System.out.println("Введите имя");
                 String name = reader.nextLine();
-                User user = userService.update(email, password, name);
+//                User user = userService.update(email, password, name);
                 System.out.println("Выполнено");
             }
         },
         /**
          * Команда удаления пользователя.
-         * <p>В соответствии с {@link UserService#delete(String)} пользователю
+         * <p>В соответствии с {@link UserService#delete(long, long)} пользователю
          * предоставляется возможность удалить собственную учетную запись,
          * администратор может удалять любые учетные записи.
          */
@@ -101,7 +101,7 @@ public class CommandManager {
                 System.out.println("Удаление пользователя:");
                 System.out.println("Введите email");
                 String email = reader.nextLine();
-                User user = userService.delete(email);
+//                User user = userService.delete(email);
                 System.out.println("Выполнено");
             }
         },
@@ -119,7 +119,7 @@ public class CommandManager {
                 String description = reader.nextLine();
                 System.out.println("Привычка ежедневная (д/н)");
                 boolean isDaily = OK.contains(reader.nextLine());
-                Habit habit = habitService.add(name, description, isDaily);
+//                Habit habit = habitService.add(name, description, isDaily);
                 System.out.println("Выполнено");
             }
         },
@@ -139,7 +139,7 @@ public class CommandManager {
                 String description = reader.nextLine();
                 System.out.println("Привычка ежедневная (д/н)");
                 boolean isDaily = OK.contains(reader.nextLine());
-                Habit habit = habitService.update(currentHabitName, habitName, description, isDaily);
+//                Habit habit = habitService.update(currentHabitName, habitName, description, isDaily);
                 System.out.println("Выполнено");
             }
         },
@@ -151,7 +151,7 @@ public class CommandManager {
             @Override
             public void execute() {
                 System.out.println("Получение привычек:");
-                List<Habit> habits = habitService.getAll();
+//                List<Habit> habits = habitService.getAll();
                 System.out.println("Выполнено");
             }
         },
@@ -165,7 +165,7 @@ public class CommandManager {
                 System.out.println("Удаление привычки:");
                 System.out.println("Введите привычку");
                 String habitName = reader.nextLine();
-                Habit habit = habitService.delete(habitName);
+//                Habit habit = habitService.delete(habitName);
                 System.out.println("Выполнено");
             }
         },
@@ -181,7 +181,7 @@ public class CommandManager {
                 String habitName = reader.nextLine();
                 System.out.println("Введите дату в формате \"yyyy-MM-dd\" (оставьте поле пустым, чтобы отметить на сегодня)");
                 String date = reader.nextLine();
-                LocalDate note = habitService.note(habitName, date);
+//                LocalDate note = habitService.note(habitName, date);
                 System.out.println("Выполнено");
             }
         },
@@ -193,8 +193,8 @@ public class CommandManager {
             @Override
             public void execute() {
                 System.out.println("Вывод текущих серий выполнения привычек:");
-                Map<String, Long> habitStreak = habitService.getStreak();
-                System.out.println(habitStreak.toString());
+//                Map<String, Long> habitStreak = habitService.getStreak();
+//                System.out.println(habitStreak.toString());
                 System.out.println("Выполнено");
             }
         },
@@ -212,7 +212,7 @@ public class CommandManager {
                 String beginDate = reader.nextLine();
                 System.out.println("Введите дату конца периода в формате \"yyyy-MM-dd\" (оставьте поле пустым, чтобы отметить на сегодня)");
                 String endDate = reader.nextLine();
-                double hit = habitService.getHit(habitName, beginDate, endDate);
+//                double hit = habitService.getHit(habitName, beginDate, endDate);
                 System.out.println("Выполнено");
             }
         },

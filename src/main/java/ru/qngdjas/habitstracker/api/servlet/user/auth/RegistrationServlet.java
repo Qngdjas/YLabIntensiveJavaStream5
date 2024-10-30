@@ -28,7 +28,7 @@ public class RegistrationServlet extends BaseUserServlet {
             HttpSession httpSession = req.getSession(true);
             httpSession.setAttribute("userId", user.getId());
             resp.getWriter().write(messageMapper.toJson(
-                    new SingleMessageDTO(String.format("Пользователь %s успешно зарегистрирован.", user.getEmail()))
+                    new SingleMessageDTO(String.format("Пользователь %s успешно зарегистрирован", user.getEmail()))
             ));
         } catch (EmailException exception) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

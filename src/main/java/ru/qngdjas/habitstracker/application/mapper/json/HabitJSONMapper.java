@@ -1,13 +1,16 @@
 package ru.qngdjas.habitstracker.application.mapper.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
+import ru.qngdjas.habitstracker.application.dto.habit.NotedDateDTO;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class HabitJSONMapper {
 
@@ -25,6 +28,18 @@ public class HabitJSONMapper {
 
     public HabitCreateDTO toHabitCreateDTO(InputStream json) throws IOException {
         return objectMapper.readValue(json, HabitCreateDTO.class);
+    }
+
+    public NotedDateDTO toNotedDateDTO(InputStream json) throws IOException {
+        return objectMapper.readValue(json, NotedDateDTO.class);
+    }
+
+    public byte[] toJson(HabitDTO habitDTO) throws JsonProcessingException {
+        return objectMapper.writeValueAsBytes(habitDTO);
+    }
+
+    public byte[] toJson(List<HabitDTO> habitDTOS) throws JsonProcessingException {
+        return objectMapper.writeValueAsBytes(habitDTOS);
     }
 
 }
