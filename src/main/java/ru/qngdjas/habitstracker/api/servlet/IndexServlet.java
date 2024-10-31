@@ -5,9 +5,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import ru.qngdjas.habitstracker.api.servlet.core.BaseServlet;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 
 import java.io.IOException;
 
+@ApiLoggable
 @WebServlet("/")
 public class IndexServlet extends BaseServlet {
 

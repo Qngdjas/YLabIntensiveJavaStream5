@@ -8,9 +8,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.qngdjas.habitstracker.api.servlet.core.BaseServlet;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 
 import java.io.IOException;
 
+@ApiLoggable
 @WebServlet("/logout")
 public class LogoutServlet extends BaseServlet {
 

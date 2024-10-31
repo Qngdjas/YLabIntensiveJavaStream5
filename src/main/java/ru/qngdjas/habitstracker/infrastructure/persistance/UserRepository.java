@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
@@ -8,6 +9,7 @@ import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManag
 import java.sql.*;
 import java.util.List;
 
+@ExecutionLoggable
 public class UserRepository implements IUserRepository {
 
     @Override

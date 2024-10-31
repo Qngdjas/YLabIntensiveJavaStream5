@@ -6,6 +6,7 @@ import jakarta.servlet.http.*;
 import ru.qngdjas.habitstracker.application.dto.message.MultipleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
@@ -15,6 +16,7 @@ import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
 import java.io.IOException;
 
+@ApiLoggable
 @WebServlet("/users/*")
 public class UserServlet extends BaseUserServlet {
 

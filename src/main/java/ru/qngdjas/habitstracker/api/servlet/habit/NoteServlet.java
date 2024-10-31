@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import ru.qngdjas.habitstracker.application.dto.habit.NotedDateDTO;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+@ApiLoggable
 @WebServlet("/notes/*")
 public class NoteServlet extends BaseHabitServlet {
 

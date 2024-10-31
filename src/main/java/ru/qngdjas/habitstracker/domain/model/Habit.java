@@ -9,8 +9,8 @@ public class Habit extends Model {
     private String name;
     private String description;
     private boolean isDaily;
-    private final LocalDate createdAt;
-    private final long userId;
+    private LocalDate createdAt;
+    private long userId;
 
     public Habit(long id, String name, String description, boolean isDaily, LocalDate createdAt, long userId) {
         super(id);
@@ -53,13 +53,24 @@ public class Habit extends Model {
         isDaily = daily;
     }
 
-    public long getUserID() {
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public long getUserId() {
         return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     @Override
     public String toString() {
         return String.format("Привычка %s", name);
     }
-
 }

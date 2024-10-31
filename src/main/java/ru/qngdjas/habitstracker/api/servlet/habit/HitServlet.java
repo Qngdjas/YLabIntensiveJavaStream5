@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpSession;
 import ru.qngdjas.habitstracker.application.dto.habit.NotedPeriodDTO;
 import ru.qngdjas.habitstracker.application.dto.message.MultipleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 
+@ApiLoggable
 @WebServlet("/hits/*")
 public class HitServlet extends BaseHabitServlet {
 

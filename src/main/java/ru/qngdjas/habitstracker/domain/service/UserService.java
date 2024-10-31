@@ -4,6 +4,7 @@ import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
 import ru.qngdjas.habitstracker.application.mapper.model.UserMapper;
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.application.utils.validator.UserValidator;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
@@ -15,7 +16,8 @@ import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
 /**
  * Сервис обработки запросов управления пользователями.
  */
-public class UserService extends Service {
+@ExecutionLoggable
+public class UserService {
 
     /**
      * Репозиторий CRUD-операций над моделями пользователей.

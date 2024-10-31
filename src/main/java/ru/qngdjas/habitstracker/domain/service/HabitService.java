@@ -5,6 +5,7 @@ import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.NotedDateDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.NotedPeriodDTO;
 import ru.qngdjas.habitstracker.application.mapper.model.HabitMapper;
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.application.utils.validator.HabitValidator;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.Habit;
@@ -13,7 +14,6 @@ import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
 import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
-import ru.qngdjas.habitstracker.domain.service.core.Service;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitNotesRepository;
 
@@ -24,7 +24,8 @@ import java.util.*;
 /**
  * Сервис обработки запросов управления привычками.
  */
-public class HabitService extends Service {
+@ExecutionLoggable
+public class HabitService {
 
     /**
      * Репозитории CRUD-операций над моделями привычек.
@@ -64,7 +65,7 @@ public class HabitService extends Service {
         if (!habit.getName().equals(habitDTO.getName()) && habitRepository.isExists(habitDTO.getUserId(), habitDTO.getName())) {
             throw new AlreadyExistsException(String.format("Привычка %s уже существует", habitDTO.getName()));
         }
-        if (habit.getUserID() == habitDTO.getUserId()) {
+        if (habit.getUserId() == habitDTO.getUserId()) {
             return habitRepository.update(mapper.toHabit(habitDTO));
         }
         throw new RootlessException();
@@ -83,7 +84,7 @@ public class HabitService extends Service {
         if (habit == null) {
             throw new NotFoundException(String.format("Привычки с id=%d не существует", id));
         }
-        if (userId == habit.getUserID()) {
+        if (userId == habit.getUserId()) {
             return habit;
         }
         throw new RootlessException();

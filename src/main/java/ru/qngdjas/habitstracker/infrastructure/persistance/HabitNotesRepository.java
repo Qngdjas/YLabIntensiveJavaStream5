@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManager;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 /**
  *
  */
+@ExecutionLoggable
 public class HabitNotesRepository implements IHabitNotesRepository {
 
     @Override

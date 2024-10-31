@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.domain.model.Habit;
 import ru.qngdjas.habitstracker.domain.repository.IHabitRepository;
 import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManager;
@@ -7,6 +8,7 @@ import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManag
 import java.sql.*;
 import java.util.*;
 
+@ExecutionLoggable
 public class HabitRepository implements IHabitRepository {
 
     @Override
@@ -17,7 +19,7 @@ public class HabitRepository implements IHabitRepository {
             preparedStatement.setString(1, instance.getName());
             preparedStatement.setString(2, instance.getDescription());
             preparedStatement.setBoolean(3, instance.isDaily());
-            preparedStatement.setLong(4, instance.getUserID());
+            preparedStatement.setLong(4, instance.getUserId());
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();

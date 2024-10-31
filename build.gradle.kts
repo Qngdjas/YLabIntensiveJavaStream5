@@ -1,6 +1,7 @@
 plugins {
     id("java")
-    war
+    id("war")
+    id("io.freefair.aspectj.post-compile-weaving") version "8.10.2"
 }
 
 group = "ru.qngdjas"
@@ -10,7 +11,7 @@ extra.apply {
     set("jakartaVersion", "6.0.0")
     set("jacksonVersion", "2.18.0")
     set("mapstructVersion", "1.6.2")
-    set("assertJVersion", "1.15.0")
+    set("aspectJVersion", "1.9.22.1")
     set("postgresqlVersion", "42.7.4")
     set("liquibaseVersion", "4.29.2")
     set("junitVersion", "5.10.0")
@@ -21,11 +22,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly("jakarta.servlet:jakarta.servlet-api:${rootProject.extra["jakartaVersion"]}")
+    implementation("jakarta.servlet:jakarta.servlet-api:${rootProject.extra["jakartaVersion"]}")
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jacksonVersion"]}")
     implementation("org.mapstruct:mapstruct:${rootProject.extra["mapstructVersion"]}")
     annotationProcessor("org.mapstruct:mapstruct-processor:${rootProject.extra["mapstructVersion"]}")
-    implementation("org.codehaus.mojo:aspectj-maven-plugin:${rootProject.extra["assertJVersion"]}")
+    implementation("org.aspectj:aspectjrt:${rootProject.extra["aspectJVersion"]}")
     implementation("org.postgresql:postgresql:${rootProject.extra["postgresqlVersion"]}")
     implementation("org.liquibase:liquibase-core:${rootProject.extra["liquibaseVersion"]}")
     testImplementation(platform("org.junit:junit-bom:${rootProject.extra["junitVersion"]}"))

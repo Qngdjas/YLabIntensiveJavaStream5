@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpSession;
 import ru.qngdjas.habitstracker.api.servlet.user.BaseUserServlet;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.service.core.IncorrectPasswordException;
 import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 
 import java.io.IOException;
 
+@ApiLoggable
 @WebServlet("/login")
 public class LoginServlet extends BaseUserServlet {
 
@@ -25,6 +27,7 @@ public class LoginServlet extends BaseUserServlet {
             User user = userService.login(userDTO);
             HttpSession httpSession = req.getSession(true);
             httpSession.setAttribute("userId", user.getId());
+            httpSession.setAttribute("email", user.getEmail());
             resp.getWriter()
                     .write(messageMapper.toJson(
                             new SingleMessageDTO(

@@ -3,25 +3,21 @@ package ru.qngdjas.habitstracker.api.servlet.habit;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import ru.qngdjas.habitstracker.api.servlet.core.BaseServlet;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
 import ru.qngdjas.habitstracker.application.dto.message.MultipleMessageDTO;
 import ru.qngdjas.habitstracker.application.dto.message.SingleMessageDTO;
-import ru.qngdjas.habitstracker.application.mapper.json.HabitJSONMapper;
 import ru.qngdjas.habitstracker.application.mapper.model.HabitMapper;
+import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.Habit;
-import ru.qngdjas.habitstracker.domain.service.HabitService;
 import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
 import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
+@ApiLoggable
 @WebServlet("/habits/*")
 public class HabitServlet extends BaseHabitServlet {
 
