@@ -9,6 +9,8 @@ version = "1.0-SNAPSHOT"
 
 extra.apply {
     set("jakartaVersion", "6.0.0")
+    set("springVersion", "6.1.14")
+    set("lombokVersion", "1.18.34")
     set("jacksonVersion", "2.18.0")
     set("mapstructVersion", "1.6.2")
     set("aspectJVersion", "1.9.22.1")
@@ -23,6 +25,10 @@ repositories {
 
 dependencies {
     implementation("jakarta.servlet:jakarta.servlet-api:${rootProject.extra["jakartaVersion"]}")
+    implementation("org.springframework:spring-context:${rootProject.extra["springVersion"]}")
+    implementation("org.springframework:spring-web:${rootProject.extra["springVersion"]}")
+    implementation("org.springframework:spring-webmvc:${rootProject.extra["springVersion"]}")
+    compileOnly("org.projectlombok:lombok:${rootProject.extra["lombokVersion"]}")
     implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.extra["jacksonVersion"]}")
     implementation("org.mapstruct:mapstruct:${rootProject.extra["mapstructVersion"]}")
     annotationProcessor("org.mapstruct:mapstruct-processor:${rootProject.extra["mapstructVersion"]}")
