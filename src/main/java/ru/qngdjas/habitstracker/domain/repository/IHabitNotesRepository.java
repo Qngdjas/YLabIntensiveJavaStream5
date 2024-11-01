@@ -24,7 +24,7 @@ public interface IHabitNotesRepository {
      * @param habitID Идентификатор привычки.
      * @return Количество подряд выполненных привычек за последнюю серию.
      */
-    long getStreak(long habitID);
+    String getStreak(long habitID);
 
     /**
      * Метод получения процента успешного выполнения конкретной привычки за период.
@@ -34,6 +34,6 @@ public interface IHabitNotesRepository {
      * @param endDate   Дата завершения периода.
      * @return Процент успешного выполнения привычки.
      */
-    double getHit(long habitID, LocalDate beginDate, LocalDate endDate);
+    String getHit(long habitID, LocalDate beginDate, LocalDate endDate);
 
 }

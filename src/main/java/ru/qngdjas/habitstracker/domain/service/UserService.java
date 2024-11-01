@@ -1,123 +1,104 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
+import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
+import ru.qngdjas.habitstracker.application.mapper.model.UserMapper;
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
+import ru.qngdjas.habitstracker.application.utils.validator.UserValidator;
+import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
+import ru.qngdjas.habitstracker.domain.service.core.*;
 import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
-import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 /**
  * Сервис обработки запросов управления пользователями.
  */
-public class UserService extends Service {
+@ExecutionLoggable
+public class UserService {
 
     /**
      * Репозиторий CRUD-операций над моделями пользователей.
      */
-    private final static IUserRepository userRepository = new UserRepository();
+    private static final IUserRepository userRepository = new UserRepository();
+    private static final UserMapper mapper = UserMapper.INSTANCE;
 
     /**
      * Метод аутентификации пользователя по почте и паролю.
      *
-     * @param email    Адрес электронной почты пользователя.
-     * @param password Пароль пользователя.
+     * @param userDTO Учетные данные пользователя.
      * @return Аутентифицированный пользователь {@link User}, если учетные данные корректны, <p>иначе {@code null}.
      */
-    public User login(String email, String password) {
-        User user = userRepository.retrieveByEmail(email);
-        if (user != null) {
-            if (user.getPassword().equals(password)) {
-                Session.getInstance().setUser(user);
-                System.out.printf("Пользователь %s авторизован\n", user.getEmail());
-                return user;
-            }
-            System.out.println("Пароль введен не верно");
-        } else {
-            System.out.println("Пользователь не найден");
+    public User login(UserLoginDTO userDTO) throws IncorrectPasswordException, NotFoundException {
+        UserValidator.validate(userDTO);
+        User user = userRepository.retrieveByEmail(userDTO.getEmail());
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь %s не найден", userDTO.getEmail()));
         }
-        return null;
+        if (!user.getPassword().equals(userDTO.getPassword())) {
+            throw new IncorrectPasswordException();
+        }
+        return user;
     }
 
     /**
      * Метод регистрации нового пользователя.
      *
-     * @param email    Адрес электронной почты пользователя.
-     * @param password Пароль пользователя.
-     * @param name     Имя пользователя.
-     * @param isAdmin  Статус администратора.
+     * @param userDTO Данные пользователя.
      * @return Зарегистрированный пользователь {@link User},
      * <p>{@code null} если регистрация не удалась.
      */
-    public User register(String email, String password, String name, Boolean isAdmin) {
-        if (userRepository.isExists(email)) {
-            System.out.println("Пользователь с таким email уже существует");
-        } else {
-            try {
-                User user = userRepository.create(new User(email, password, name, isAdmin));
-                Session.getInstance().setUser(user);
-                return user;
-            } catch (EmailException exception) {
-                System.out.println(exception.getMessage());
-            }
+    public User register(UserCreateDTO userDTO) throws EmailException, ValidationException, AlreadyExistsException {
+        UserValidator.validate(userDTO);
+        if (userRepository.isExists(userDTO.getEmail())) {
+            throw new AlreadyExistsException("Пользователь с таким email уже существует");
         }
-        return null;
+        return userRepository.create(mapper.toUser(userDTO));
     }
 
     /**
      * Метод обновления профиля пользователя.
      *
-     * @param email    Адрес электронной почты пользователя.
-     * @param password Пароль пользователя.
-     * @param name     Имя пользователя.
+     * @param id      Идентификатор пользователя, который выполняет операцию.
+     * @param userDTO Обновленные данные пользователя.
      * @return Обновленный пользователь {@link User},
      * <p>{@code null} если обновление не удалось.
      */
-    public User update(String email, String password, String name) {
-        if (isAuth()) {
-            if (!userRepository.isExists(email)) {
-                User user = userRepository.retrieveByEmail(Session.getInstance().getUser().getEmail());
-                if (user != null) {
-                    try {
-                        user.setEmail(email);
-                        user.setPassword(password);
-                        user.setName(name);
-                        user = userRepository.update(user);
-                        Session.getInstance().setUser(user);
-                        return user;
-                    } catch (EmailException exception) {
-                        System.out.println(exception.getMessage());
-                    }
-                }
-                System.out.println("Пользователь не найден");
-            } else {
-                System.out.println("Email занят");
-            }
+    public User update(long id, UserDTO userDTO) throws EmailException, NotFoundException, ValidationException, AlreadyExistsException, RootlessException {
+        UserValidator.validate(userDTO);
+        User user = userRepository.retrieve(id);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь c id=%d не найден", id));
         }
-        return null;
+        if (!user.getEmail().equals(userDTO.getEmail()) && userRepository.isExists(userDTO.getEmail())) {
+            throw new AlreadyExistsException("Email занят");
+        }
+        if (user.getId() == userDTO.getId() || user.isAdmin()) {
+            userDTO.setId(id);
+            return userRepository.update(mapper.toUser(userDTO));
+        }
+        throw new RootlessException();
     }
 
     /**
      * Метод удаления профиля пользователя.
      *
-     * @param email Адрес электронной почты пользователя.
+     * @param id         Идентификатор пользователя, который выполняет операцию.
+     * @param idToDelete Идентификатор пользователя, который подлежит удалению.
      * @return Удаленный пользователь {@link User},
      * <p>{@code null} если удаление не удалось.
      */
-    public User delete(String email) {
-        if (isAuth()) {
-            if (Session.getInstance().getUser().getEmail().equals(email) || isAdmin()) {
-                User user = userRepository.retrieveByEmail(email);
-                if (user != null) {
-                    userRepository.delete(user.getID());
-                    if (Session.getInstance().getUser().getID() == user.getID()) {
-                        Session.getInstance().setUser(null);
-                    }
-                    System.out.printf("Пользователь %s удален\n", user.getEmail());
-                    return user;
-                }
-                System.out.println("Пользователь не найден");
-            }
+    public User delete(long id, long idToDelete) throws NotFoundException, RootlessException {
+        User user = userRepository.retrieve(idToDelete);
+        if (user == null) {
+            throw new NotFoundException("Пользователь не найден");
         }
-        return null;
+        if (id == idToDelete || userRepository.retrieve(id).isAdmin()) {
+            userRepository.delete(idToDelete);
+            return user;
+        }
+        throw new RootlessException();
     }
 }

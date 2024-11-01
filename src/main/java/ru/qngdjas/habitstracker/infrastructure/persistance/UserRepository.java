@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IUserRepository;
@@ -8,6 +9,7 @@ import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManag
 import java.sql.*;
 import java.util.List;
 
+@ExecutionLoggable
 public class UserRepository implements IUserRepository {
 
     @Override
@@ -22,7 +24,7 @@ public class UserRepository implements IUserRepository {
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             resultSet.next();
-            instance.setID(resultSet.getLong(1));
+            instance.setId(resultSet.getLong(1));
             System.out.printf("Пользователь %s зарегистрирован\n", instance.getEmail());
         } catch (SQLException exception) {
             System.out.printf("Не удалось добавить пользователя:\n%s\n", exception);
@@ -39,7 +41,7 @@ public class UserRepository implements IUserRepository {
             preparedStatement.setString(2, instance.getPassword());
             preparedStatement.setString(3, instance.getName());
             preparedStatement.setBoolean(4, instance.isAdmin());
-            preparedStatement.setLong(5, instance.getID());
+            preparedStatement.setLong(5, instance.getId());
             int result = preparedStatement.executeUpdate();
             if (result > 0) {
                 System.out.printf("Пользователь %s обновлен\n", instance.getEmail());
@@ -81,7 +83,13 @@ public class UserRepository implements IUserRepository {
             preparedStatement.setString(1, email);
             ResultSet result = preparedStatement.executeQuery();
             if (result.next()) {
-                return new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getBoolean(5));
+                return new User(
+                        result.getInt(1),
+                        result.getString(2),
+                        result.getString(3),
+                        result.getString(4),
+                        result.getBoolean(5)
+                );
             }
         } catch (SQLException | EmailException exception) {
             System.out.printf("Не удалось получить пользователя:\n%s\n", exception);
@@ -121,4 +129,5 @@ public class UserRepository implements IUserRepository {
         }
         return isExists;
     }
+
 }

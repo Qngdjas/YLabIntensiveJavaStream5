@@ -18,6 +18,7 @@ public interface IUserRepository extends IModelRepository<User> {
 
     /**
      * Проверка существования пользователя по адресу электронной почты.
+     *
      * @param email Адрес электронной почты.
      * @return {@code true} если пользователь с указанным email существует.
      */

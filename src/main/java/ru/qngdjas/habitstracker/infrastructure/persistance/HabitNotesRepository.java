@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
 import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManager;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 /**
  *
  */
+@ExecutionLoggable
 public class HabitNotesRepository implements IHabitNotesRepository {
 
     @Override
@@ -29,7 +31,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
     }
 
     @Override
-    public long getStreak(long habitID) {
+    public String getStreak(long habitID) {
         int streak = 0;
         String sql = "CALL getactualhabitstreak(?, ?)";
         Connection connection = ConnectionManager.getInstance().getConnection();
@@ -42,11 +44,11 @@ public class HabitNotesRepository implements IHabitNotesRepository {
         } catch (SQLException exception) {
             System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
         }
-        return streak;
+        return String.valueOf(streak);
     }
 
     @Override
-    public double getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
+    public String getHit(long habitID, LocalDate beginDate, LocalDate endDate) {
         if (!beginDate.isAfter(endDate)) {
             double hit = 0.0;
             String sql = "CALL gethabithit(?, ?, ?, ?)";
@@ -62,7 +64,7 @@ public class HabitNotesRepository implements IHabitNotesRepository {
             } catch (SQLException exception) {
                 System.out.printf("Не удалось подсчитать серию выполнения:\n%s\n", exception);
             }
-            return hit;
+            return String.valueOf(hit);
         }
         throw new IllegalArgumentException("Дата конца периода не может быть меньше даты начала периода");
     }

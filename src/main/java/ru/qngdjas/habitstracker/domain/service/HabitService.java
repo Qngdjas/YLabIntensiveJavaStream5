@@ -1,12 +1,21 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
+import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
+import ru.qngdjas.habitstracker.application.dto.habit.NotedDateDTO;
+import ru.qngdjas.habitstracker.application.dto.habit.NotedPeriodDTO;
+import ru.qngdjas.habitstracker.application.mapper.model.HabitMapper;
+import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
+import ru.qngdjas.habitstracker.application.utils.validator.HabitValidator;
+import ru.qngdjas.habitstracker.application.utils.validator.ValidationException;
 import ru.qngdjas.habitstracker.domain.model.Habit;
-import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.repository.IHabitRepository;
 import ru.qngdjas.habitstracker.domain.repository.IHabitNotesRepository;
+import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
+import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
+import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitRepository;
 import ru.qngdjas.habitstracker.infrastructure.persistance.HabitNotesRepository;
-import ru.qngdjas.habitstracker.infrastructure.session.Session;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -15,164 +24,127 @@ import java.util.*;
 /**
  * Сервис обработки запросов управления привычками.
  */
-public class HabitService extends Service {
+@ExecutionLoggable
+public class HabitService {
 
     /**
      * Репозитории CRUD-операций над моделями привычек.
      */
     private static final IHabitRepository habitRepository = new HabitRepository();
     private static final IHabitNotesRepository statisticRepository = new HabitNotesRepository();
-
+    private static final HabitMapper mapper = HabitMapper.INSTANCE;
 
     /**
      * Метод добавления привычки.
      *
-     * @param habitName   Наименование привычки.
-     * @param description Описание привычки.
-     * @param isDaily     Тип привычки (ежедневная/еженедельная).
+     * @param habitDTO Данные привычки.
      * @return Новая привычка {@link Habit}, если входные данные корректны,
      * <p>иначе {@code null}.
      */
-    public Habit add(String habitName, String description, boolean isDaily) {
-        if (isAuth()) {
-            User user = Session.getInstance().getUser();
-            if (!habitRepository.isExists(user.getID(), habitName)) {
-                Habit habit = new Habit(habitName, description, isDaily, user.getID());
-                habitRepository.create(habit);
-                return habit;
-            }
-            System.out.printf("Привычка %s у пользователя %s уже существует", habitName, user.getEmail());
+    public Habit add(HabitCreateDTO habitDTO) throws ValidationException, AlreadyExistsException {
+        HabitValidator.validate(habitDTO);
+        if (habitRepository.isExists(habitDTO.getUserId(), habitDTO.getName())) {
+            throw new AlreadyExistsException(String.format("Привычка %s у пользователя уже существует", habitDTO.getName()));
         }
-        return null;
+        return habitRepository.create(mapper.toHabit(habitDTO));
     }
 
     /**
      * Метод обновление привычки.
      *
-     * @param currentHabitName Текущее наименование привычки.
-     * @param habitName        Наименование привычки.
-     * @param description      Описание привычки.
-     * @param isDaily          Тип привычки (ежедневная/еженедельная).
+     * @param habitDTO Обновленные данные привычки.
      * @return Обновленная привычка {@link Habit}, если входные данные корректны,
      * <p>иначе {@code null}.
      */
-    public Habit update(String currentHabitName, String habitName, String description, boolean isDaily) {
-        if (isAuth()) {
-            User user = Session.getInstance().getUser();
-            if (!habitRepository.isExists(user.getID(), habitName)) {
-                Habit habit = habitRepository.retrieveByUserIDAndName(user.getID(), currentHabitName);
-                if (habit != null) {
-                    habit.setName(habitName);
-                    habit.setDescription(description);
-                    habit.setDaily(isDaily);
-                    habitRepository.update(habit);
-                    System.out.printf("Привычка %s обновлена\n", habit.getName());
-                    return habit;
-                }
-                System.out.printf("Привычка %s у пользователя %s не найдена", currentHabitName, user.getEmail());
-            } else {
-                System.out.printf("Привычка %s уже существует", habitName);
-            }
+    public Habit update(HabitDTO habitDTO) throws ValidationException, NotFoundException, AlreadyExistsException, RootlessException {
+        HabitValidator.validate(habitDTO);
+        Habit habit = habitRepository.retrieve(habitDTO.getId());
+        if (habit == null) {
+            throw new NotFoundException(String.format("Привычки с id=%d не существует", habitDTO.getId()));
         }
-        return null;
-    }
-
-    /**
-     * Метод удаления привычки.
-     *
-     * @param habitName Наименование привычки.
-     * @return Удаленная привычка {@link Habit}, если входные данные корректны,
-     * <p>иначе {@code null}.
-     */
-    public Habit delete(String habitName) {
-        if (isAuth()) {
-            User user = Session.getInstance().getUser();
-            Habit habit = habitRepository.retrieveByUserIDAndName(user.getID(), habitName);
-            if (habit != null) {
-                habitRepository.delete(habit.getID());
-                System.out.printf("Привычка %s у пользователя %s удалена\n", habitName, user.getEmail());
-                return habit;
-            }
-            System.out.printf("Привычка %s у пользователя %s не найдена", habitName, user.getEmail());
+        if (!habit.getName().equals(habitDTO.getName()) && habitRepository.isExists(habitDTO.getUserId(), habitDTO.getName())) {
+            throw new AlreadyExistsException(String.format("Привычка %s уже существует", habitDTO.getName()));
         }
-        return null;
+        if (habit.getUserId() == habitDTO.getUserId()) {
+            return habitRepository.update(mapper.toHabit(habitDTO));
+        }
+        throw new RootlessException();
     }
 
     /**
      * Метод получения привычки.
      *
-     * @param habitName Наименование привычки.
+     * @param userId Идентификатор пользователя, выполняющего операцию.
+     * @param id     Идентификатор привычки.
      * @return Привычка {@link Habit}, если найдена,
      * <p>иначе {@code null}.
      */
-    public Habit get(String habitName) {
-        if (isAuth()) {
-            User user = Session.getInstance().getUser();
-            Habit habit = habitRepository.retrieveByUserIDAndName(user.getID(), habitName);
-            if (habit != null) {
-                System.out.println(habit);
-                return habit;
-            }
-            System.out.printf("Привычка %s у пользователя %s не найдена", habitName, user.getEmail());
+    public Habit get(long userId, long id) throws NotFoundException, RootlessException {
+        Habit habit = habitRepository.retrieve(id);
+        if (habit == null) {
+            throw new NotFoundException(String.format("Привычки с id=%d не существует", id));
         }
-        return null;
+        if (userId == habit.getUserId()) {
+            return habit;
+        }
+        throw new RootlessException();
     }
 
     /**
      * Метод получения всех привычек пользователя.
      *
+     * @param userId Идентификатор пользователя, выполняющего операцию.
      * @return Список привычек {@link List}{@code <}{@link Habit}{@code >},
      * <p>если у пользователя нет привычек, выводит информационное сообщение в консоль.
      */
-    public List<Habit> getAll() {
-        List<Habit> habits = new ArrayList<>();
-        if (isAuth()) {
-            User user = Session.getInstance().getUser();
-            habits = habitRepository.listByUserID(user.getID());
-            if (habits.isEmpty()) {
-                System.out.printf("Привычки у пользователя %s не найдены", user.getEmail());
-            } else {
-                System.out.printf("Привычки пользователя:\n%s\n", habits);
-            }
+    public List<Habit> getAll(long userId) throws NotFoundException {
+        List<Habit> habits = habitRepository.listByUserID(userId);
+        if (habits.isEmpty()) {
+            throw new NotFoundException("Привычки не найдены");
         }
         return habits;
+    }
+
+    /**
+     * Метод удаления привычки.
+     *
+     * @param userId Идентификатор пользователя, выполняющего операцию.
+     * @param id     Идентификатор привычки.
+     * @return Удаленная привычка {@link Habit}, если входные данные корректны,
+     * <p>иначе {@code null}.
+     */
+    public Habit delete(long userId, long id) throws NotFoundException, RootlessException {
+        Habit habit = get(userId, id);
+        habitRepository.delete(id);
+        return habit;
     }
 
     /**
      * Метод отметки выполнения привычки на определенную дату.
      * <p>Если дата не задана явно, используются текущие сутки.
      *
-     * @param habitName Наименование привычки.
-     * @param date      Дата отметки.
+     * @param userId       Идентификатор пользователя, выполняющего операцию.
+     * @param id           Идентификатор привычки.
+     * @param notedDateDTO Дата отметки.
      * @return Дата отметки.
      */
-    public LocalDate note(String habitName, String date) {
-        if (isAuth()) {
-            try {
-                Habit habit = get(habitName);
-                if (habit != null) {
-                    LocalDate noteDate = date.isBlank() ? LocalDate.now() : LocalDate.parse(date);
-                    return statisticRepository.note(habit.getID(), noteDate);
-                }
-            } catch (DateTimeParseException exception) {
-                System.out.println("Неверный формат даты");
-            }
-        }
-        return null;
+    public LocalDate note(long userId, long id, NotedDateDTO notedDateDTO) throws RootlessException, NotFoundException, DateTimeParseException {
+        Habit habit = get(userId, id);
+        LocalDate noteDate = notedDateDTO.getDate() == null || notedDateDTO.getDate().isBlank() ? LocalDate.now() : LocalDate.parse(notedDateDTO.getDate());
+        return statisticRepository.note(habit.getId(), noteDate);
     }
 
     /**
      * Метод получения текущей серии выполнения привычек.
      *
+     * @param userId Идентификатор пользователя, выполняющего операцию.
      * @return Словарь привычек с указанием текущей серии.
      */
-    public Map<String, Long> getStreak() {
-        Map<String, Long> streaks = new HashMap<>();
-        if (isAuth()) {
-            List<Habit> habits = getAll();
-            for (Habit habit : habits) {
-                streaks.put(habit.getName(), statisticRepository.getStreak(habit.getID()));
-            }
+    public Map<String, String> getStreak(long userId) throws NotFoundException {
+        Map<String, String> streaks = new HashMap<>();
+        List<Habit> habits = getAll(userId);
+        for (Habit habit : habits) {
+            streaks.put(habit.getName(), statisticRepository.getStreak(habit.getId()));
         }
         return streaks;
     }
@@ -181,56 +153,41 @@ public class HabitService extends Service {
      * Метод получения успеваемости по конкретной привычке за период.
      * <p>Если дата не задана явно, используются текущие сутки.
      *
-     * @param habitName Наименование привычки.
-     * @param beginDate Дата начала отчетного периода.
-     * @param endDate   Дата завершения отчетного периода.
+     * @param userId         Идентификатор пользователя, выполняющего операцию.
+     * @param id             Идентификатор привычки.
+     * @param notedPeriodDTO Данные отчетного периода.
      * @return Процент успеваемости по привычке.
      */
-    public double getHit(String habitName, String beginDate, String endDate) {
-        double result = 0.0f;
-        if (isAuth()) {
-            try {
-                Habit habit = get(habitName);
-                if (habit != null) {
-                    LocalDate noteBeginDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(beginDate);
-                    LocalDate noteEndDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(endDate);
-                    System.out.printf("Процент успеха по привычке %s:\n", habit.getName());
-                    result = statisticRepository.getHit(habit.getID(), noteBeginDate, noteEndDate);
-                }
-            } catch (DateTimeParseException exception) {
-                System.out.println("Неверный формат даты");
-            } catch (IllegalArgumentException exception) {
-                System.out.println(exception.getMessage());
-            }
-        }
-        return result;
+    public String getHit(long userId, long id, NotedPeriodDTO notedPeriodDTO) throws RootlessException, NotFoundException, DateTimeParseException, IllegalArgumentException {
+        Habit habit = get(userId, id);
+        LocalDate noteBeginDate = notedPeriodDTO.getBeginDate() == null || notedPeriodDTO.getBeginDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getBeginDate());
+        LocalDate noteEndDate = notedPeriodDTO.getEndDate() == null || notedPeriodDTO.getEndDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getEndDate());
+        return statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate);
     }
 
     /**
      * Метод получения успеваемости по всем привычкам пользователя за период.
      * <p>Если дата не задана явно, используются текущие сутки.
      *
-     * @param beginDate Дата начала отчетного периода.
-     * @param endDate   Дата завершения отчетного периода.
+     * @param userId         Идентификатор пользователя, выполняющего операцию.
+     * @param notedPeriodDTO Данные отчетного периода.
      * @return Словарь привычек с указанием успеваемости.
      */
-    public Map<Habit, Double> getHits(String beginDate, String endDate) {
-        Map<Habit, Double> result = new HashMap<>();
-        if (isAuth()) {
-            try {
-                List<Habit> habits = getAll();
-                LocalDate noteBeginDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(beginDate);
-                LocalDate noteEndDate = beginDate.isBlank() ? LocalDate.now() : LocalDate.parse(endDate);
-                for (Habit habit : habits) {
-                    result.put(habit, statisticRepository.getHit(habit.getID(), noteBeginDate, noteEndDate));
-                }
-                System.out.printf("Отчёт по привычкам:\n%s\n", result);
-                return result;
-            } catch (DateTimeParseException exception) {
-                System.out.println("Неверный формат даты");
-            } catch (IllegalArgumentException exception) {
-                System.out.println(exception.getMessage());
-            }
+    public Map<String, String> getHits(long userId, NotedPeriodDTO notedPeriodDTO) throws RootlessException, NotFoundException, DateTimeParseException, IllegalArgumentException {
+        Map<String, String> result = new HashMap<>();
+        List<Habit> habits = getAll(userId);
+        LocalDate noteBeginDate = notedPeriodDTO.getBeginDate() == null || notedPeriodDTO.getBeginDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getBeginDate());
+        LocalDate noteEndDate = notedPeriodDTO.getEndDate() == null || notedPeriodDTO.getEndDate().isBlank() ?
+                LocalDate.now() :
+                LocalDate.parse(notedPeriodDTO.getEndDate());
+        for (Habit habit : habits) {
+            result.put(habit.getName(), statisticRepository.getHit(habit.getId(), noteBeginDate, noteEndDate));
         }
         return result;
     }
