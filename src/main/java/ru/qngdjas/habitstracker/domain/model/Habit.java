@@ -41,6 +41,10 @@ public class Habit extends Model {
         return isDaily;
     }
 
+    public void setDaily(boolean daily) {
+        isDaily = daily;
+    }
+
     public String getPeriodicity() {
         return isDaily ? "ежедневная" : "еженедельная";
     }
@@ -49,9 +53,6 @@ public class Habit extends Model {
         return isDaily ? 1 : 7;
     }
 
-    public void setDaily(boolean daily) {
-        isDaily = daily;
-    }
 
     public LocalDate getCreatedAt() {
         return createdAt;

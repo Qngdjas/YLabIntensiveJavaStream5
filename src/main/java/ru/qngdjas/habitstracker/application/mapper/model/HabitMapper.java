@@ -21,6 +21,7 @@ public interface HabitMapper {
     @Mapping(target = "createdAt", ignore = true)
     Habit toHabit(HabitDTO habitDTO);
 
+    @Mapping(target = "isDaily", source = "daily")
     HabitDTO toDto(Habit habit);
 
 }

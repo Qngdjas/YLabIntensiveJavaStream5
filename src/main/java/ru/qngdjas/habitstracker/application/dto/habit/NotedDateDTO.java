@@ -4,6 +4,10 @@ public class NotedDateDTO {
 
     private String date;
 
+    public NotedDateDTO(String date) {
+        setDate(date);
+    }
+
     public String getDate() {
         return date;
     }

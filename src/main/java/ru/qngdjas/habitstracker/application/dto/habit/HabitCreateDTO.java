@@ -7,6 +7,13 @@ public class HabitCreateDTO {
     private boolean isDaily = true;
     private long userId;
 
+    public HabitCreateDTO(String name, String description, boolean isDaily, long userId) {
+        setName(name);
+        setDescription(description);
+        setDaily(isDaily);
+        setUserId(userId);
+    }
+
     public String getName() {
         return name;
     }

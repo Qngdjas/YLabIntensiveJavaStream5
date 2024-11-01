@@ -1,7 +1,5 @@
 package ru.qngdjas.habitstracker.application.dto.habit;
 
-import java.time.LocalDate;
-
 public class HabitDTO {
 
     private long id;
@@ -9,6 +7,14 @@ public class HabitDTO {
     private String description;
     private boolean isDaily = true;
     private long userId;
+
+    public HabitDTO(long id, String name, String description, boolean isDaily, long userId) {
+        setId(id);
+        setName(name);
+        setDescription(description);
+        setDaily(isDaily);
+        setUserId(userId);
+    }
 
     public long getId() {
         return id;

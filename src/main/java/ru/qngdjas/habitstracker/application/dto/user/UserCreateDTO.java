@@ -1,11 +1,21 @@
 package ru.qngdjas.habitstracker.application.dto.user;
 
+/**
+ * Класс-хранилище данных пользователя,
+ */
 public class UserCreateDTO {
 
     private String email;
     private String password;
     private String name;
     private boolean isAdmin;
+
+    public UserCreateDTO(String email, String password, String name, boolean isAdmin) {
+        setEmail(email);
+        setPassword(password);
+        setName(name);
+        setAdmin(isAdmin);
+    }
 
     public String getEmail() {
         return email;

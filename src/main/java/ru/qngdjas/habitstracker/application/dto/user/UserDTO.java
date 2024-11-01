@@ -8,6 +8,14 @@ public class UserDTO {
     private String name;
     private boolean isAdmin;
 
+    public UserDTO(long id, String email, String password, String name, boolean isAdmin) {
+        setId(id);
+        setEmail(email);
+        setPassword(password);
+        setName(name);
+        setAdmin(isAdmin);
+    }
+
     public long getId() {
         return id;
     }
