@@ -8,7 +8,7 @@ import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);

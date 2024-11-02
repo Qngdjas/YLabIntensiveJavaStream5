@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import org.springframework.stereotype.Service;
 import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
@@ -17,6 +18,7 @@ import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
  * Сервис обработки запросов управления пользователями.
  */
 @ExecutionLoggable
+@Service
 public class UserService {
 
     /**
