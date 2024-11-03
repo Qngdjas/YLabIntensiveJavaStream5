@@ -1,6 +1,6 @@
-package ru.qngdjas.habitstracker.api.config;
+package ru.qngdjas.habitstracker.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -12,12 +12,12 @@ import ru.qngdjas.habitstracker.api.handler.AuthInterceptor;
 
 import java.util.List;
 
-@EnableWebMvc
 @Configuration
+@EnableWebMvc
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-//    @Autowired
-//    private AuthInterceptor authInterceptor;
+    private final AuthInterceptor authInterceptor;
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -25,9 +25,9 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new MappingJackson2HttpMessageConverter(builder.build()));
     }
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(authInterceptor)
-//                .excludePathPatterns("/login, /register");
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authInterceptor)
+                .excludePathPatterns("/api/v1/login, /api/v1/register");
+    }
 }

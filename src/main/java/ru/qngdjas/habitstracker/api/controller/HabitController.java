@@ -17,8 +17,8 @@ import java.util.List;
 @RequestMapping("/habits")
 public class HabitController {
 
-    private HabitMapper habitMapper;
-    private HabitService habitService;
+    private final HabitMapper habitMapper;
+    private final HabitService habitService;
 
     @GetMapping(value = "/habits", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<HabitDTO>> list() {
