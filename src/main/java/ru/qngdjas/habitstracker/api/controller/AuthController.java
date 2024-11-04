@@ -11,6 +11,7 @@ import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.mapper.model.UserMapper;
 import ru.qngdjas.habitstracker.domain.model.user.User;
 import ru.qngdjas.habitstracker.domain.service.UserService;
+import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
 /**
  * Контроллер операций аутентификации пользователя с поддержкой JSON.
@@ -20,7 +21,6 @@ import ru.qngdjas.habitstracker.domain.service.UserService;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
 
-    private final UserMapper userMapper;
     private final UserService userService;
 
     @GetMapping(value = "/info")
@@ -60,5 +60,18 @@ public class AuthController {
         return ResponseEntity.ok(new SingleMessageDTO(String.format("Пользователь %s успешно зарегистрирован", user.getEmail())));
     }
 
-    //logout
+    /**
+     * Маршрут выхода из системы.
+     *
+     * @param httpSession Сессия пользователя.
+     * @return Сообщение о статусе выполнения операции выхода из системы с поясняющим текстом.
+     */
+    @GetMapping(value = "/logout")
+    public ResponseEntity<SingleMessageDTO> logout(HttpSession httpSession) {
+        if (httpSession == null) {
+            throw new RootlessException();
+        }
+        httpSession.invalidate();
+        return ResponseEntity.ok(new SingleMessageDTO("Выполнен выход из системы"));
+    }
 }

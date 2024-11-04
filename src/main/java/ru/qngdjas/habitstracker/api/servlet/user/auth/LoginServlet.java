@@ -15,9 +15,8 @@ import ru.qngdjas.habitstracker.domain.service.core.NotFoundException;
 
 import java.io.IOException;
 
-@ApiLoggable
-@WebServlet("/login")
-public class LoginServlet extends BaseUserServlet {
+//@ApiLoggable
+abstract public class LoginServlet extends BaseUserServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

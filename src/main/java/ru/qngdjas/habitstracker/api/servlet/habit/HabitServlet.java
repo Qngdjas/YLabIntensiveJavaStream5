@@ -17,9 +17,8 @@ import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 
 import java.io.IOException;
 
-@ApiLoggable
-@WebServlet("/habits/*")
-public class HabitServlet extends BaseHabitServlet {
+//@ApiLoggable
+abstract public class HabitServlet extends BaseHabitServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

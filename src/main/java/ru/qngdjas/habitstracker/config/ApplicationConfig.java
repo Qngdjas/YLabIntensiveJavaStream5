@@ -10,8 +10,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@EnableWebMvc
 @Configuration
+@EnableWebMvc
 public class ApplicationConfig implements WebApplicationInitializer {
 
     @Override

@@ -15,9 +15,8 @@ import ru.qngdjas.habitstracker.domain.service.core.RootlessException;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 
-@ApiLoggable
-@WebServlet("/hits/*")
-public class HitServlet extends BaseHabitServlet {
+//@ApiLoggable
+abstract public class HitServlet extends BaseHabitServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
