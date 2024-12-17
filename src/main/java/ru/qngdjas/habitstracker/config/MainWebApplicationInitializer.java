@@ -3,21 +3,26 @@ package ru.qngdjas.habitstracker.config;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@Configuration
-@EnableWebMvc
-public class ApplicationConfig implements WebApplicationInitializer {
+/**
+ * Основной класс конфигурации приложения.
+ */
+public class MainWebApplicationInitializer implements WebApplicationInitializer {
 
+    /**
+     * Метод конфигурации веб контекста.
+     *
+     * @param servletContext веб контекст.
+     * @throws ServletException критические ошибки конфигурации.
+     */
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.scan("ru.qngdjas.habitstracker");
+        context.register(WebMvcConfig.class);
         servletContext.addListener(new ContextLoaderListener(context));
         ServletRegistration.Dynamic dispatcher = servletContext.addServlet("mvc", new DispatcherServlet(context));
         dispatcher.setLoadOnStartup(1);

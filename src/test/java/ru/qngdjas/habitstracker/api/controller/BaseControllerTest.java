@@ -3,59 +3,54 @@ package ru.qngdjas.habitstracker.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
-import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import ru.qngdjas.habitstracker.config.ApplicationConfig;
+import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
+import ru.qngdjas.habitstracker.config.WebMvcConfig;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * НЕ ПОЛУЧИЛОСЬ НАСТРОИТЬ ТЕСТЫ - СОЗДАЕТСЯ ПУСТОЙ КОНТЕКСТ:
- * нояб. 04, 2024 3:45:29 AM org.springframework.mock.web.MockServletContext log
- * INFO: Initializing Spring TestDispatcherServlet ''
- * нояб. 04, 2024 3:45:29 AM org.springframework.web.servlet.FrameworkServlet initServletBean
- * INFO: Initializing Servlet ''
- * нояб. 04, 2024 3:45:29 AM org.springframework.web.servlet.FrameworkServlet initServletBean
- * INFO: Completed initialization in 2 ms
+ * Базовый класс интеграционных тестов.
  */
-@SpringJUnitWebConfig(classes = {ApplicationConfig.class}, loader = AnnotationConfigWebContextLoader.class)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@SpringJUnitWebConfig(classes = WebMvcConfig.class)
 class BaseControllerTest {
 
-
     @Autowired
-    protected WebApplicationContext webApplicationContext;
+    WebApplicationContext webApplicationContext;
 
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         objectMapper = new ObjectMapper();
     }
 
     @Test
+    @DisplayName("Тестирование корректной конфигурации контроллеров")
     public void givenWac_whenServletContext_thenItProvidesGreetController() {
         ServletContext servletContext = webApplicationContext.getServletContext();
-
         assertNotNull(servletContext);
-        assertTrue(servletContext instanceof MockServletContext);
+        assertInstanceOf(MockServletContext.class, servletContext);
         assertNotNull(webApplicationContext.getBean(AuthController.class));
+        assertNotNull(webApplicationContext.getBean(UserController.class));
+        assertNotNull(webApplicationContext.getBean(HabitController.class));
+    }
+
+    protected UserLoginDTO getValidUserCredentials() {
+        return new UserLoginDTO("ivan@mail.ru", "ivan");
+    }
+
+    protected UserLoginDTO getInvalidUserCredentials() {
+        return new UserLoginDTO("ivan@mail.ru", "navi");
     }
 
 }

@@ -20,7 +20,7 @@ public class HabitController {
     private final HabitService habitService;
 
     @GetMapping
-    public ResponseEntity<List<HabitDTO>> list(@PathVariable("userId") long userId) {
+    public ResponseEntity<List<HabitDTO>> list(@PathVariable long userId) {
         List<HabitDTO> habits = habitService.getAll(userId)
                 .stream()
                 .map(habitMapper::toDto)
@@ -29,7 +29,7 @@ public class HabitController {
     }
 
     @PostMapping
-    public ResponseEntity<SingleMessageDTO> create(@PathVariable("userId") long userId) {
+    public ResponseEntity<SingleMessageDTO> create(@PathVariable long userId) {
         return ResponseEntity.ok(
                 new SingleMessageDTO(
                         String.format("Создание привычки для пользователя %d", userId)
@@ -38,12 +38,12 @@ public class HabitController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<HabitDTO> retrieve(@PathVariable("userId") long userId, @PathVariable("id") long id) {
+    public ResponseEntity<HabitDTO> retrieve(@PathVariable long userId, @PathVariable long id) {
         return ResponseEntity.ok(new HabitDTO(id, "Тестовая привычка", "Описание тестовой привычки", true, userId));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<SingleMessageDTO> update(@PathVariable("userId") long userId, @PathVariable("id") long id) {
+    public ResponseEntity<SingleMessageDTO> update(@PathVariable long userId, @PathVariable long id) {
         return ResponseEntity.ok(
                 new SingleMessageDTO(
                         String.format("Обновление привычки %d для пользователя %d", id, userId)
@@ -52,7 +52,7 @@ public class HabitController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<SingleMessageDTO> delete(@PathVariable("userId") long userId, @PathVariable("id") long id) {
+    public ResponseEntity<SingleMessageDTO> delete(@PathVariable long userId, @PathVariable long id) {
         return ResponseEntity.ok(
                 new SingleMessageDTO(
                         String.format("Удаление привычки %d для пользователя %d", id, userId)

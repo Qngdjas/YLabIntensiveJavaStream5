@@ -65,9 +65,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Метод обработки неверно введенного пароля.
+     * Метод обработки ошибок создания существующих данных.
      *
-     * @param exception Ошибка некорректности введенного пароля.
+     * @param exception Ошибка создания существующих данных.
      * @return Сообщение об ошибке.
      */
     @ExceptionHandler(AlreadyExistsException.class)

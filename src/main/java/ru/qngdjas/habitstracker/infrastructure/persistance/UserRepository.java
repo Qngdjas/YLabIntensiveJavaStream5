@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.infrastructure.persistance;
 
+import org.springframework.stereotype.Repository;
 import ru.qngdjas.habitstracker.application.utils.logger.ExecutionLoggable;
 import ru.qngdjas.habitstracker.domain.model.user.EmailException;
 import ru.qngdjas.habitstracker.domain.model.user.User;
@@ -9,9 +10,13 @@ import ru.qngdjas.habitstracker.infrastructure.external.postgres.ConnectionManag
 import java.sql.*;
 import java.util.List;
 
+/**
+ * Класс репозиторий для работы с User объектами.
+ */
+@Repository
 @ExecutionLoggable
 public class UserRepository implements IUserRepository {
-
+//    TODO: Рассмотреть возможность применения jdbcTemplate для маппинга
     @Override
     public User create(User instance) {
         String sql = "INSERT INTO entity.users (email, password, user_name, admin_flag) VALUES (?, ?, ?, ?)";
