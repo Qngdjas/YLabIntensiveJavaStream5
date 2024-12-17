@@ -15,9 +15,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-@ApiLoggable
-@WebServlet("/notes/*")
-public class NoteServlet extends BaseHabitServlet {
+//@ApiLoggable
+abstract public class NoteServlet extends BaseHabitServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

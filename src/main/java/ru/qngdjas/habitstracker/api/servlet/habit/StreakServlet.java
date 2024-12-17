@@ -15,9 +15,8 @@ import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 
-@ApiLoggable
-@WebServlet("/streaks")
-public class StreakServlet extends BaseHabitServlet {
+//@ApiLoggable
+abstract public class StreakServlet extends BaseHabitServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

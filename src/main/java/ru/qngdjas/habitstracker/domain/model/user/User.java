@@ -1,29 +1,31 @@
 package ru.qngdjas.habitstracker.domain.model.user;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.qngdjas.habitstracker.domain.model.core.Model;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Getter
 public class User extends Model {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("[^@\\s]+@[^@\\s]+");
 
     private String email;
+    @Setter
     private String password;
+    @Setter
     private String name;
+    @Setter
     private boolean isAdmin;
 
     public User(long id, String email, String password, String name, boolean isAdmin) throws EmailException {
         super(id);
         setEmail(email);
-        this.password = password;
-        this.name = name;
-        this.isAdmin = isAdmin;
-    }
-
-    public String getEmail() {
-        return email;
+        setPassword(password);
+        setName(name);
+        setAdmin(isAdmin);
     }
 
     public void setEmail(String email) throws EmailException {
@@ -32,30 +34,6 @@ public class User extends Model {
             throw new EmailException();
         }
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
     }
 
     @Override

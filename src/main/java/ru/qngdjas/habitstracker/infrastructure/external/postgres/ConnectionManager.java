@@ -23,7 +23,6 @@ public class ConnectionManager {
     }
 
     private void loadProperties() {
-
         Properties properties = new Properties();
         try (InputStream inputStream = getClass().getResourceAsStream("/postgres/config.properties")) {
             if (inputStream == null) {

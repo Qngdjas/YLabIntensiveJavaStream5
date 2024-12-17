@@ -1,5 +1,6 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import org.springframework.stereotype.Service;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.NotedDateDTO;
@@ -25,6 +26,7 @@ import java.util.*;
  * Сервис обработки запросов управления привычками.
  */
 @ExecutionLoggable
+@Service
 public class HabitService {
 
     /**

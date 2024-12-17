@@ -12,9 +12,8 @@ import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 
 import java.io.IOException;
 
-@ApiLoggable
-@WebServlet("/logout")
-public class LogoutServlet extends BaseServlet {
+//@ApiLoggable
+abstract public class LogoutServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -7,7 +7,7 @@ import ru.qngdjas.habitstracker.application.dto.habit.HabitCreateDTO;
 import ru.qngdjas.habitstracker.application.dto.habit.HabitDTO;
 import ru.qngdjas.habitstracker.domain.model.Habit;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface HabitMapper {
 
     HabitMapper INSTANCE = Mappers.getMapper(HabitMapper.class);

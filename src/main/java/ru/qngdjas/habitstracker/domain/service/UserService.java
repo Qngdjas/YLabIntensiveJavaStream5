@@ -1,5 +1,7 @@
 package ru.qngdjas.habitstracker.domain.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.qngdjas.habitstracker.application.dto.user.UserDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserLoginDTO;
 import ru.qngdjas.habitstracker.application.dto.user.UserCreateDTO;
@@ -16,14 +18,17 @@ import ru.qngdjas.habitstracker.infrastructure.persistance.UserRepository;
 /**
  * Сервис обработки запросов управления пользователями.
  */
+@Service
 @ExecutionLoggable
 public class UserService {
 
     /**
      * Репозиторий CRUD-операций над моделями пользователей.
      */
-    private static final IUserRepository userRepository = new UserRepository();
-    private static final UserMapper mapper = UserMapper.INSTANCE;
+    @Autowired
+    private IUserRepository userRepository;
+    @Autowired
+    private UserMapper mapper;
 
     /**
      * Метод аутентификации пользователя по почте и паролю.

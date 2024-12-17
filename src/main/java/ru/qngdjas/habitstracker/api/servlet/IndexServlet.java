@@ -9,9 +9,8 @@ import ru.qngdjas.habitstracker.application.utils.logger.ApiLoggable;
 
 import java.io.IOException;
 
-@ApiLoggable
-@WebServlet("/")
-public class IndexServlet extends BaseServlet {
+//@ApiLoggable
+abstract public class IndexServlet extends BaseServlet {
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

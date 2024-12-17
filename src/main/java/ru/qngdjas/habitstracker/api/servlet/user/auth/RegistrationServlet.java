@@ -17,9 +17,8 @@ import ru.qngdjas.habitstracker.domain.service.core.AlreadyExistsException;
 
 import java.io.IOException;
 
-@ApiLoggable
-@WebServlet("/register")
-public class RegistrationServlet extends BaseUserServlet {
+//@ApiLoggable
+abstract public class RegistrationServlet extends BaseUserServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
