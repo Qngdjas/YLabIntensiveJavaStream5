@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping(value = "/login")
     public ResponseEntity<SingleMessageDTO> login(HttpSession httpSession, @RequestBody UserLoginDTO userDTO) {
         User user = userService.login(userDTO);
-        setSessionAttributes(httpSession, user.getId(), user.getEmail());
+        httpSession.setAttribute("user", user);
         return ResponseEntity.ok(
                 new SingleMessageDTO(String.format("Пользователь %s успешно аутентифицирован", user.getEmail()))
         );
@@ -47,8 +47,7 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<SingleMessageDTO> register(HttpSession httpSession, @RequestBody UserCreateDTO userDTO) {
         User user = userService.register(userDTO);
-        //TODO: Избавиться от отдельных строк - setSession: User instance
-        setSessionAttributes(httpSession, user.getId(), user.getEmail());
+        httpSession.setAttribute("user", user);
         return ResponseEntity.ok(new SingleMessageDTO(String.format("Пользователь %s успешно зарегистрирован", user.getEmail())));
     }
 
@@ -64,18 +63,5 @@ public class AuthController {
         return ResponseEntity.ok(
                 new SingleMessageDTO("Выполнен выход из системы")
         );
-    }
-
-
-    /**
-     * Служебный метод простой конфигурации сессионных аттрибутов.
-     *
-     * @param httpSession Сессия пользователя.
-     * @param userId      Уникальный идентификатор пользователя.
-     * @param email       Адрес электронной почты пользователя.
-     */
-    private void setSessionAttributes(HttpSession httpSession, Long userId, String email) {
-        httpSession.setAttribute("userId", userId);
-        httpSession.setAttribute("email", email);
     }
 }

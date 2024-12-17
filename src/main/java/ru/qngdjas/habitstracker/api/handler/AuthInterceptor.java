@@ -39,6 +39,6 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     private boolean isAuthenticated(HttpSession session) {
         return session != null
-                && session.getAttribute("email") != null;
+                && session.getAttribute("user") != null;
     }
 }

@@ -70,6 +70,10 @@ tasks {
     }
 }
 
+//tasks.withType<JavaCompile> {
+//    options.compilerArgs.add("-parameters")
+//}
+
 tasks.register<JavaExec>("runMigrations") {
     group = "migration"
     description = "Выполнение миграции БД"
